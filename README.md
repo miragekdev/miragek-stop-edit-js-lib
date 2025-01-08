@@ -133,10 +133,9 @@ Feel free to contribute! Open a pull request or create an issue if you have sugg
 
 ## Author
 
-Created by [Your Name] (replace with your name or GitHub handle).
+Created by Godsent for Miragek
 
 ## Final Notes
 
 StopEdit is a simple and effective tool for preventing page edits. It’s lightweight, easy to use, and highly customizable for your needs. If you have any questions or feedback, don’t hesitate to reach out!
-```
 
