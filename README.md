@@ -1,6 +1,3 @@
-Here's the `README.md` file formatted in Markdown:
-
-```markdown
 # StopEdit - JavaScript Library to Prevent Page Edits
 
 StopEdit is a lightweight JavaScript library that prevents users from modifying the content of your webpage. It monitors changes to the DOM and resets any modifications back to the original state. Perfect for protecting text and elements from unwanted edits!
@@ -143,6 +140,3 @@ Created by [Your Name] (replace with your name or GitHub handle).
 StopEdit is a simple and effective tool for preventing page edits. It’s lightweight, easy to use, and highly customizable for your needs. If you have any questions or feedback, don’t hesitate to reach out!
 ```
 
----
-
-This `README.md` should give users a clear understanding of how to use the **StopEdit** library and its functionality. You can replace "Your Name" with your own or your GitHub handle, and it’s all set! Let me know if you need any further adjustments! 😊
