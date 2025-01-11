@@ -151,13 +151,10 @@ Here are the main tasks and features we’re working on to make this project eve
 
 ### 🛠 Upcomming
 - [ ] Integrate with PHP and NodeJs (serverside) to make it nearly impossible to bypass ⚙️
-- [ ] Create a more proper doc hosted in miragek with more code examples and test sandbox 📦
+- [ ] Create a more proper doc hosted in miragek with more code examples and sandbox 📦
 
 ---
 
-Here's an updated **Contributing** section for your README that integrates your GitHub URL! 🎉 This structure will make it easy for people to contribute while staying professional and user-friendly.
-
----
 
 ### Contributing
 
