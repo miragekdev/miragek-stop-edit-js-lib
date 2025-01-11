@@ -123,13 +123,107 @@ Here's an example of a full HTML page using `StopEdit`:
 </html>
 ```
 
+# 📜 Changelog
+
+All notable changes to this project will be documented in this file.
+
+## [Unreleased]
+- We are cooking 🛠️
+
+---
+
+## [1.1.0] - initial release
+### 🚀 Added
+- StopEdit Core features
+- Updated Readme (doc)
+
+---
+
+## 📝 Current To-Do List
+
+Here are the main tasks and features we’re working on to make this project even better:
+
+### 🚀 Features in Progress
+- [x] Test on more browsers 👀
+- [ ] Hide image urls 🔐
+- [ ] Completely hide web code from thiefs 🔍
+- [ ] Disable content copying 📬
+
+### 🛠 Upcomming
+- [ ] Integrate with PHP and NodeJs (serverside) to make it nearly impossible to bypass ⚙️
+- [ ] Create a more proper doc hosted in miragek with more code examples and test sandbox 📦
+
+---
+
+Here's an updated **Contributing** section for your README that integrates your GitHub URL! 🎉 This structure will make it easy for people to contribute while staying professional and user-friendly.
+
+---
+
+### Contributing
+
+```markdown
+## 🤝 Contributing
+
+We welcome contributions from everyone! Whether it’s fixing a bug, adding a feature, or improving documentation, your help is appreciated. Follow these steps to get started:
+
+### How to Contribute
+1. **Fork the repository**  
+   Click the `Fork` button at the top-right corner of the [repo](https://github.com/miragekdev/miragek-stop-edit-js-lib). 🍴
+
+2. **Clone your fork**  
+   Use the following command to clone the fork to your local machine:  
+   ```bash
+   git clone https://github.com/YOUR_USERNAME/miragek-stop-edit-js-lib.git
+   ```
+
+3. **Create a branch**  
+   Make sure to create a branch for your changes:  
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+4. **Make your changes**  
+   Implement your feature or fix, then stage and commit the changes:  
+   ```bash
+   git add .
+   git commit -m "Add: Short description of your changes"
+   ```
+
+5. **Push your changes**  
+   Push your branch to your forked repository:  
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+6. **Submit a Pull Request (PR)**  
+   Go to the [original repository](https://github.com/miragekdev/miragek-stop-edit-js-lib) and open a Pull Request from your forked repository.  
+   - Ensure your PR clearly describes the purpose of your changes.  
+   - Add relevant details about the problem or feature for context.  
+
+---
+
+### Code Guidelines
+To maintain code quality, please follow these guidelines:
+- Use meaningful commit messages 📝.
+- Write clear and concise comments where necessary ✍️.
+- Ensure the code passes linting and tests (if available) ✅.
+- Follow the existing code style and conventions ⚡.
+
+---
+
+### Feedback and Questions
+If you have any questions about contributing or need help, feel free to open an issue [here](https://github.com/miragekdev/miragek-stop-edit-js-lib/issues) or start a discussion. We’re here to help! 💬
+
+---
+
+Thank you for contributing and helping make this project better! 🎉
+
+Let me know if you'd like to add anything else, such as example contribution workflows or testing instructions! 😄
+
 ## License
 
 StopEdit is open-source and available under the MIT License.
 
-## Contributing
-
-Feel free to contribute! Open a pull request or create an issue if you have suggestions or bug fixes.
 
 ## Author
 
