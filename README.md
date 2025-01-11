@@ -1,101 +1,65 @@
-# StopEdit - JavaScript Library to Prevent Page Edits
+# StopEdit - JavaScript Library to Prevent Page Edits 🛡️
 
-StopEdit is a lightweight JavaScript library that prevents users from modifying the content of your webpage. It monitors changes to the DOM and resets any modifications back to the original state. Perfect for protecting text and elements from unwanted edits! So, trickers will not be able to change texts or anything on your website by using `inspact elelemnt or view page code`
+**StopEdit** is a lightweight JavaScript library designed to protect your webpage from unauthorized edits. It monitors the DOM for changes and resets any modifications back to the original state. Say goodbye to tricksters using "Inspect Element" or "View Page Source" to mess with your content! 🚫👀
 
-## Features
+---
 
-- **Protects entire page or specific elements**: You can choose which part of your page to protect from truckers who use inpect elelemnt to modify and redesign your website just before your eyes live. (default is the `<body>`).
-- **Automatic reset**: If any changes are made, the library automatically resets the content to its original state.
-- **Customizable heartbeat**: Periodic checks to ensure content remains unedited.
-- **Debugging support**: Optional debugging mode to log actions and mutations.
+## 📚 Table of Contents
+1. [Features](#features)  
+2. [Installation](#installation)  
+3. [Usage](#usage)  
+4. [Basic HTML Example](#basic-html-example)  
+5. [Options](#options)  
+6. [How It Works](#how-it-works)  
+7. [Changelog](#changelog)  
+8. [To-Do List](#to-do-list)  
+9. [Contributing](#contributing)  
+10. [License](#license)  
+11. [Author](#author)  
 
-## Installation
+---
 
-Simply download the `StopEdit.js` file and include it in your HTML page.
+## ✨ Features
+
+- **Protect your page or specific elements**: Choose to safeguard the entire page or selected parts (default is `<body>`).  
+- **Automatic reset**: Detects and reverses any unauthorized changes.  
+- **Customizable heartbeat**: Periodically checks for edits to ensure integrity.  
+- **Debugging support**: Logs actions and changes in the console for troubleshooting.  
+
+---
+
+## ⚙️ Installation
+
+Download the `StopEdit.js` file and include it in your HTML page:
 
 ```html
 <script src="path/to/StopEdit.js"></script>
 ```
 
-## Usage
+---
 
-1. **Include the Script**: Add the `StopEdit` JavaScript file to your HTML.
+## 🛠️ Usage
 
-    ```html
-    <script src="js/StopEdit.js"></script>
-    ```
-
-2. **Initialize StopEdit**: Create a new instance of `StopEdit` and configure it with your desired options.
-
-    ```html
-    <script>
-      const guard = new StopEdit({
-        selector: 'body',  // Protect the entire page (default)
-        heartbeat: 1000,   // Check every second
-        debug: true        // Enable debug logs (optional)
-      });
-
-      guard.init();  // Initialize the library
-    </script>
-    ```
-
-## Options
-
-- `selector` (optional): A CSS selector for the element to protect. Default is `'body'`.
-- `heartbeat` (optional): Time interval in milliseconds (default: `1000ms`). This determines how often the DOM will be checked for changes.
-- `debug` (optional): Enable debugging mode to log changes to the console. Default is `false`.
-
-## Example
-
-### Protect the Entire Page
-
-This will protect everything inside the `<body>` tag from being edited:
+### Initialize StopEdit
+To protect your content, include the script and initialize the library with your desired options.  
 
 ```html
 <script>
   const guard = new StopEdit({
-    selector: 'body',  // Protect the entire page
-    heartbeat: 1000,   // Check every second
-    debug: true        // Enable debug logs
+    selector: 'body',  // Protects the entire page by default
+    heartbeat: 1000,   // Checks every second
+    debug: true        // Enable debugging mode
   });
 
-  guard.init();  // Initialize StopEdit
+  guard.init();  // Start monitoring
 </script>
 ```
 
-### Protect a Specific Element
+---
 
-You can also protect a specific element by using a CSS selector.
+## 🧩 Basic HTML Example
 
-```html
-<script>
-  const guard = new StopEdit({
-    selector: '#protected',  // Protect only the element with ID "protected"
-    heartbeat: 1000,         // Check every second
-    debug: true              // Enable debug logs
-  });
-
-  guard.init();  // Initialize StopEdit
-</script>
-```
-
-## How It Works
-
-1. **Clone and Store Original Content**: When `init()` is called, StopEdit stores a clone of the original content for comparison.
-2. **MutationObserver**: It uses a `MutationObserver` to monitor the DOM for changes. If any modifications are detected, the content is automatically reset.
-3. **Heartbeat**: If enabled, StopEdit checks the content periodically (e.g., every second) to ensure it remains unaltered.
-
-## Methods
-
-### `init()`
-Initializes the library and starts protecting the specified element.
-
-### `disable()`
-Disables the protection and stops monitoring changes.
-
-## Example HTML Structure
-
-Here's an example of a full HTML page using `StopEdit`:
+Here’s a complete example of how to use StopEdit in an HTML page:
 
 ```html
 <!DOCTYPE html>
@@ -107,125 +71,117 @@ Here's an example of a full HTML page using `StopEdit`:
 </head>
 <body>
   <h1>Protected Content</h1>
-  <p>This content cannot be edited. Try modifying it, and it will reset.</p>
+  <p>This content cannot be edited. Try modifying it, and it will reset automatically.</p>
 
+  <!-- Include the StopEdit library -->
   <script src="path/to/StopEdit.js"></script>
   <script>
+    // Initialize StopEdit
     const guard = new StopEdit({
-      selector: 'body',  // Protect the entire page
-      heartbeat: 1000,   // Check every second
-      debug: true        // Enable debug logs
+      selector: 'body',  // Protects everything inside the body tag
+      heartbeat: 1000,   // Checks every second
+      debug: true        // Logs actions in the console
     });
 
-    guard.init();  // Initialize StopEdit
+    guard.init();  // Start monitoring
   </script>
 </body>
 </html>
 ```
 
-# 📜 Changelog
+---
 
-All notable changes to this project will be documented in this file.
+## 🔧 Options
 
-## [Unreleased]
-- We are cooking 🛠️
+- `selector` *(default: `'body'`)*: Specify a CSS selector for the element(s) to protect.  
+- `heartbeat` *(default: `1000` ms)*: Frequency (in milliseconds) for checking DOM integrity.  
+- `debug` *(default: `false`)*: Enable console logs for debugging.
 
 ---
 
-## [1.1.0] - initial release
-### 🚀 Added
-- StopEdit Core features
-- Updated Readme (doc)
+## 🔍 How It Works
+
+1. **Original Content Storage**: Clones and stores the original content when initialized.  
+2. **Real-Time Monitoring**: Uses `MutationObserver` to detect DOM changes instantly.  
+3. **Periodic Check** *(optional)*: Heartbeat checks reinforce content protection over time.  
 
 ---
 
-## 📝 Current To-Do List
+## 📜 Changelog
 
-Here are the main tasks and features we’re working on to make this project even better:
-
-### 🚀 Features in Progress
-- [x] Test on more browsers 👀
-- [ ] Hide image urls 🔐
-- [ ] Completely hide web code from thiefs 🔍
-- [ ] Disable content copying 📬
-
-### 🛠 Upcomming
-- [ ] Integrate with PHP and NodeJs (serverside) to make it nearly impossible to bypass ⚙️
-- [ ] Create a more proper doc hosted in miragek with more code examples and sandbox 📦
+### [Unreleased]
+- In development... 🛠️  
 
 ---
 
+### [1.1.0] - Initial Release 🎉
+- Added core StopEdit functionality.  
+- Updated README documentation.  
 
-### Contributing
+---
 
-## 🤝 How to
+## 📝 To-Do List
 
-We welcome contributions from everyone! Whether it’s fixing a bug, adding a feature, or improving documentation, your help is appreciated. Follow these steps to get started:
+### Features in Progress 🚀
+- [x] Test on more browsers 🌐  
+- [ ] Hide image URLs 🔒  
+- [ ] Prevent code theft completely 🔍  
+- [ ] Disable content copying 📄  
 
-### How to Contribute
-1. **Fork the repository**  
-   Click the `Fork` button at the top-right corner of the [repo](https://github.com/miragekdev/miragek-stop-edit-js-lib). 🍴
+### Upcoming Enhancements 🔧
+- [ ] Server-side integration with PHP and Node.js.  
+- [ ] Host comprehensive docs on Miragek with sandbox examples.  
 
-2. **Clone your fork**  
-   Use the following command to clone the fork to your local machine:  
+---
+
+## 🤝 Contributing
+
+We love contributions! Whether you’re fixing bugs, adding features, or improving documentation, your help is appreciated. Here’s how to contribute:
+
+1. **Fork the repo**: [Click here](https://github.com/miragekdev/miragek-stop-edit-js-lib) and fork it! 🍴  
+2. **Clone your fork**:  
    ```bash
    git clone https://github.com/YOUR_USERNAME/miragek-stop-edit-js-lib.git
    ```
-
-3. **Create a branch**  
-   Make sure to create a branch for your changes:  
+3. **Create a branch**:  
    ```bash
    git checkout -b feature/your-feature-name
    ```
-
-4. **Make your changes**  
-   Implement your feature or fix, then stage and commit the changes:  
+4. **Make your changes** and commit them:  
    ```bash
    git add .
-   git commit -m "Add: Short description of your changes"
+   git commit -m "Add: Describe your changes"
    ```
-
-5. **Push your changes**  
-   Push your branch to your forked repository:  
+5. **Push your changes**:  
    ```bash
    git push origin feature/your-feature-name
    ```
-
-6. **Submit a Pull Request (PR)**  
-   Go to the [original repository](https://github.com/miragekdev/miragek-stop-edit-js-lib) and open a Pull Request from your forked repository.  
-   - Ensure your PR clearly describes the purpose of your changes.  
-   - Add relevant details about the problem or feature for context.  
+6. **Open a Pull Request (PR)**: Go to the [main repo](https://github.com/miragekdev/miragek-stop-edit-js-lib) and submit your PR.  
 
 ---
 
-### Code Guidelines
-To maintain code quality, please follow these guidelines:
-- Use meaningful commit messages 📝.
-- Write clear and concise comments where necessary ✍️.
-- Ensure the code passes linting and tests (if available) ✅.
-- Follow the existing code style and conventions ⚡.
+### Contribution Guidelines
+- Write clear and concise commit messages.  
+- Follow the existing coding style and conventions.  
+- Test your changes thoroughly.  
+
+Feel free to ask questions by opening an issue or starting a discussion! 💬  
 
 ---
 
-### Feedback and Questions
-If you have any questions about contributing or need help, feel free to open an issue [here](https://github.com/miragekdev/miragek-stop-edit-js-lib/issues) or start a discussion. We’re here to help! 💬
+## 📄 License
+
+StopEdit is open-source and licensed under the MIT License. See the `LICENSE` file for details.  
 
 ---
 
-Thank you for contributing and helping make this project better! 🎉
+## 👤 Author
 
-Let me know if you'd like to add anything else, such as example contribution workflows or testing instructions! 😄
+**Created by Godsent for Miragek**  
 
-## License
+---
 
-StopEdit is open-source and available under the MIT License.
+## 🚀 Final Notes
 
-
-## Author
-
-Created by Godsent for Miragek
-
-## Final Notes
-
-StopEdit is a simple and effective tool for preventing page edits. It’s lightweight, easy to use, and highly customizable for your needs. If you have any questions or feedback, don’t hesitate to reach out!
+StopEdit is a simple yet powerful tool to protect your content. It's lightweight, customizable, and perfect for securing your pages from meddling hands. If you have feedback, ideas, or questions, don't hesitate to reach out! 🎉
 
