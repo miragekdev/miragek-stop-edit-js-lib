@@ -1,10 +1,10 @@
 # StopEdit - JavaScript Library to Prevent Page Edits
 
-StopEdit is a lightweight JavaScript library that prevents users from modifying the content of your webpage. It monitors changes to the DOM and resets any modifications back to the original state. Perfect for protecting text and elements from unwanted edits! So, trickers will not be able to change texts or anything on your website by using 'inspact elelemnt or view page code'
+StopEdit is a lightweight JavaScript library that prevents users from modifying the content of your webpage. It monitors changes to the DOM and resets any modifications back to the original state. Perfect for protecting text and elements from unwanted edits! So, trickers will not be able to change texts or anything on your website by using `inspact elelemnt or view page code`
 
 ## Features
 
-- **Protects entire page or specific elements**: You can choose which part of your page to protect using a CSS selector (default is the `<body>`).
+- **Protects entire page or specific elements**: You can choose which part of your page to protect from truckers who use inpect elelemnt to modify and redesign your website just before your eyes live. (default is the `<body>`).
 - **Automatic reset**: If any changes are made, the library automatically resets the content to its original state.
 - **Customizable heartbeat**: Periodic checks to ensure content remains unedited.
 - **Debugging support**: Optional debugging mode to log actions and mutations.
