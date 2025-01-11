@@ -158,8 +158,7 @@ Here are the main tasks and features we’re working on to make this project eve
 
 ### Contributing
 
-```markdown
-## 🤝 Contributing
+## 🤝 How to
 
 We welcome contributions from everyone! Whether it’s fixing a bug, adding a feature, or improving documentation, your help is appreciated. Follow these steps to get started:
 
