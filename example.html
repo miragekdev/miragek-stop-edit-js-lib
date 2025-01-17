@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,7 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            width:90%;
+            width: 90%;
             margin: 0 auto;
             padding: 20px;
             background: #f9f9f9;
@@ -15,7 +16,8 @@
             line-height: 1.6;
         }
 
-        h1, h2 {
+        h1,
+        h2 {
             color: #2c3e50;
         }
 
@@ -98,18 +100,20 @@
         }
     </style>
 </head>
+
 <body>
     <div style="text-align: center;">
-    <h1>StopEdit Demo - Protect Your Content 🛡️</h1>
+        <h1>StopEdit Demo - Protect Your Content 🛡️</h1>
 
-    <p>Explore the power of protected text and images. Try editing and see the magic! ✨</p>
+        <p>Explore the power of protected text and images. Try editing and see the magic! ✨</p>
     </div>
     <!-- Documentation Section for Protected Text -->
     <div class="doc-section">
         <div class="doc-title">Protected Text</div>
         <div class="doc-content">
             <p>This text is <strong>protected</strong> and cannot be edited directly. 🔒</p>
-            <p>The editable section below is an example of a text area that users can type into, but any edits made will be monitored and protected by the StopEdit system.</p>
+            <p>The editable section below is an example of a text area that users can type into, but any edits made will
+                be monitored and protected by the StopEdit system.</p>
         </div>
     </div>
 
@@ -147,22 +151,25 @@
     <!-- Documentation Section for Protected Images -->
     <div class="doc-section">
         <div class="doc-title">Protected Images</div>
-        <div class="doc-content">            
-            <p>In this section, we have two images: one protected and the other normal. The protected image has special styling to distinguish it from the regular one.</p>
+        <div class="doc-content">
+            <p>In this section, we have two images: one protected and the other normal. The protected image has special
+                styling to distinguish it from the regular one.</p>
         </div>
     </div>
 
     <div class="container">
         <h2>Protected Images</h2>
         <div class="image-gallery">
-            <img src="https://img.freepik.com/free-photo/html-css-collage-concept-with-hacker_23-2150061984.jpg" alt="Protected image" class="protected-img" protected>
-            <img src="https://img.freepik.com/free-vector/soccer-stadium_1284-22432.jpg" alt="Normal image" class="normal-img">
+            <img src="https://img.freepik.com/free-photo/html-css-collage-concept-with-hacker_23-2150061984.jpg"
+                alt="Protected image" class="protected-img" protected>
+            <img src="https://img.freepik.com/free-vector/soccer-stadium_1284-22432.jpg" alt="Normal image"
+                class="normal-img">
             <!-- video protection coming soon -->
             <!-- <video width="640" height="360" controls>
                 <source src="https://velvettrades.com/assets/videos/Toro-Laptop.mp4" type="video/mp4">
                 Your browser does not support the video tag.
             </video> -->
-            
+
         </div>
     </div>
 
@@ -170,8 +177,10 @@
     <div class="doc-section">
         <div class="doc-title">Footer & JavaScript Initialization</div>
         <div class="doc-content">
-            <p>The footer contains credits for the StopEdit Team. Below that, JavaScript is used to initialize the StopEdit library.</p>
-            <p>This code enables automatic protection for text and images, and stops unauthorized edits. The functionality is powered by the `miragek-StopEdit.js` library.</p>
+            <p>The footer contains credits for the StopEdit Team. Below that, JavaScript is used to initialize the
+                StopEdit library.</p>
+            <p>This code enables automatic protection for text and images, and stops unauthorized edits. The
+                functionality is powered by the `miragek-StopEdit.js` library.</p>
         </div>
     </div>
 
@@ -186,11 +195,16 @@
         const stopEdit = new StopEdit({
             selector: 'body', // Apply StopEdit to the entire body
             heartbeat: 60000, // Check every 60 seconds to monitor any changes
-            debug: true, // Enable debug mode to see detailed logs
+            debug: true,
+            noCopy: true,
+            noPrint: true,
+            noScreenshot: true,
+            autoBlur: true,
             whitelist: ['#editable-section'] // Only the editable section is whitelisted for direct edits
         });
 
         stopEdit.init(); // Start the StopEdit functionality
     </script>
 </body>
+
 </html>

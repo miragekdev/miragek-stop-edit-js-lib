@@ -1,9 +1,13 @@
 class StopEdit {
   constructor(options = {}) {
     this.selector = options.selector || 'body';
-    this.heartbeat = options.heartbeat || 100000; // 100,000 ms (1.67 minutes)
+    this.heartbeat = options.heartbeat || 100000;
     this.debug = options.debug || false;
     this.whitelist = options.whitelist || [];
+    this.noCopy = options.noCopy || false;
+    this.noPrint = options.noPrint || false;
+    this.noScreenshot = options.noScreenshot || false;
+    this.autoBlur = options.autoBlur || false;
     this.originalContent = null;
     this.observer = null;
     this.whitelistMap = new Map();
@@ -11,7 +15,7 @@ class StopEdit {
     this.mutationTimeout = null;
     this.heartbeatInterval = null;
     this.editableElements = new Set();
-    this.protected = new Set(); // Track protected elements
+    this.protected = new Set();
   }
 
   init() {
@@ -22,13 +26,10 @@ class StopEdit {
         return;
       }
 
-      // Initialize protection features
       this.disableDirectEditing(target);
       this.originalContent = this.cloneContent(target);
       this.storeWhitelistElements(target);
       this.startObserving(target);
-      
-      // Initialize image protection
       this.initializeImageProtection(target);
 
       if (this.heartbeat) {
@@ -39,9 +40,62 @@ class StopEdit {
         console.log('StopEdit initialized: Protecting', this.selector);
       }
 
-      // Add global protection
       this.addGlobalProtection();
+
+      // Add NoPrint.js features
+      if (this.noCopy || this.noPrint || this.noScreenshot || this.autoBlur) {
+        this.initializeNoPrintFeatures();
+      }
     });
+  }
+
+  initializeNoPrintFeatures() {
+    if (this.noCopy) {
+      document.body.oncopy = () => false;
+      document.body.oncontextmenu = () => false;
+      document.body.onselectstart = document.body.ondrag = () => false;
+    }
+
+    if (this.noPrint) {
+      const printBlockerStyle = document.createElement('style');
+      printBlockerStyle.type = 'text/css';
+      printBlockerStyle.media = 'print';
+      printBlockerStyle.innerHTML = 'body { display: none !important; }';
+      document.head.appendChild(printBlockerStyle);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'p') {
+          e.preventDefault();
+          e.stopPropagation();
+          return false;
+        }
+      });
+    }
+
+    if (this.autoBlur) {
+      document.onmouseleave = () => this.applyBlur(true);
+      document.onmouseenter = () => this.applyBlur(false);
+      document.onblur = () => this.applyBlur(true);
+    }
+
+    if (this.noScreenshot) {
+      document.addEventListener('keyup', (e) => {
+        if (e.key === 'PrintScreen') {
+          navigator.clipboard.writeText('');
+        }
+      });
+    }
+
+    const noSelectStyle = document.createElement('style');
+    noSelectStyle.type = 'text/css';
+    noSelectStyle.innerHTML =
+      'div, body {-webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none;}';
+    document.head.appendChild(noSelectStyle);
+  }
+
+  applyBlur(shouldBlur) {
+    const blurValue = shouldBlur ? 'blur(5px)' : 'blur(0px)';
+    document.body.style.cssText = `-webkit-filter: ${blurValue}; -moz-filter: ${blurValue}; -ms-filter: ${blurValue}; -o-filter: ${blurValue}; filter: ${blurValue};`;
   }
 
   addGlobalProtection() {

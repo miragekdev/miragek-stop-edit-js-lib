@@ -46,9 +46,14 @@ Here's how you can set it up:
 ```html
 <script>
   const guard = new StopEdit({
-    selector: 'body',  // Protect the entire page by default
-    heartbeat: 1000,   // Checks every second
-    debug: true        // Logs actions in the console
+    selector: 'body', // Apply StopEdit to the entire body
+    heartbeat: 60000, // Check every 60 seconds to monitor any changes
+    debug: true,
+    noCopy: true,
+    noPrint: true,
+    noScreenshot: true, // does not work always
+    autoBlur: true,
+    whitelist: ['#editable-section'] // Only the editable section is whitelisted for direct edits
   });
 
   guard.init();  // Start monitoring
@@ -164,7 +169,16 @@ Please refer to the example.html for more complete examples with code snippets y
 - Block suspected dangerous users
 - Lock page with password
 
-### [1.2.0] - Current ✌
+
+### [1.3.0] - Current
+
+Added more impressive features:
+- noCopy
+- noPrint
+- noScreenshot
+- autoBlur
+
+### [1.2.0] - more features
 
 - Image protection
 - Readme doc updated
