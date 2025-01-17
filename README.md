@@ -13,7 +13,7 @@ StopEdit is a simple JavaScript library designed to keep your webpage safe from 
 
 ## 🔰 Basic Explanation
 
-a lot of people are asking me, "Godsent! What have you got up there again? We  don't understand it". And most times, I just tell them, "Go read the description again."
+A lot of people are asking me, "Godsent! What have you got up there again? We  don't understand it". And most times, I just tell them, "Go read the description again."
 
 So, what actually is this my lib about? The shortest anser is that, "It let you stop bad guys from editing anything in your live website by manipulating the frontend. Some bad guys can add extra CSS, HTML, JS, etc and even make themselves or their names verified in your site to trick unsuspecting people.
 
