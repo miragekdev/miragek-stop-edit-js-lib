@@ -1,11 +1,3 @@
----
->-
-  1. [Features](#features) 2. [Installation](#installation) 3. [Usage](#usage)
-  4. [Example](#example) 5. [Options](#options) 6. [How It Works](#how-it-works)
-  7. [Changelog](#changelog) 8. [To-Do List](#to-do-list) 9.
-  [Contributing](#contributing) 10. [License](#license) 11. [Author](#author)
----
-
 # StopEdit - A Lightweight JavaScript Library to Protect Your Page 🛡️
 
 StopEdit is a simple JavaScript library designed to keep your webpage safe from unwanted changes. It actively monitors your page for edits and resets everything back to its original state. Whether it's someone tampering with "Inspect Element" or trying to edit your content directly, StopEdit has you covered.
@@ -16,6 +8,22 @@ StopEdit is a simple JavaScript library designed to keep your webpage safe from 
 - **Automatic Reversion**: Detects unauthorized changes and immediately reverts them.
 - **Heartbeat Monitoring**: Periodic checks to ensure content integrity.
 - **Debugging Tools**: Enables detailed logging in the console for easy debugging.
+
+--------------------------------------------------------------------------------
+
+## 🔰 Basic Explanation
+
+a lot of people are asking me, "Godsent! What have you got up there again? We  don't understand it". And most times, I just tell them, "Go read the description again."
+
+So, what actually is this my lib about? The shortest anser is that, "It let you stop bad guys from editing anything in your live website by manipulating the frontend. Some bad guys can add extra CSS, HTML, JS, etc and even make themselves or their names verified in your site to trick unsuspecting people.
+
+So, how did i fix a lot of problems by kicking thousands of potential attackers or bad guys away? I created STOPEDIT which by the end of this season would be able to do a lot of things. For now, the To-Do would keep you posted on what has been done. So, what is the motivation?
+
+- stop bad guys from making changes to your hosted live site by using inspect element, etc
+- stop bad guys from viewing the original url of images, from downloading images, etc
+- prevent aliens from scrapping your site just because they feel its good
+- block all kind of suspicious activities as long as they attempt any kind of "edit"
+- disable content copy, add watermark text, prevent printing, etc
 
 --------------------------------------------------------------------------------
 
