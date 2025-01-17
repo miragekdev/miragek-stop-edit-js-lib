@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StopEdit - Cool Edition 😎</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            width:90%;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        h1, h2 {
+            color: #2c3e50;
+        }
+
+        .container {
+            background: #ffffff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .editable {
+            background: #fef7e7;
+            padding: 15px;
+            border: 1px dashed #f39c12;
+            border-radius: 4px;
+            color: #555;
+            margin-top: 10px;
+        }
+
+        .image-gallery {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .image-gallery img {
+            height: 150px;
+            width: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #ddd;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .image-gallery .protected-img {
+            border: 2px solid #3498db;
+            background: #eaf4ff;
+        }
+
+        .image-gallery img:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 14px;
+            color: #777;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+        }
+
+        /* Added styles for the documentation */
+        .doc-section {
+            background: #f0f0f0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', Courier, monospace;
+        }
+
+        .doc-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .doc-content {
+            margin-top: 10px;
+            font-size: 14px;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div style="text-align: center;">
+    <h1>StopEdit Demo - Protect Your Content 🛡️</h1>
+
+    <p>Explore the power of protected text and images. Try editing and see the magic! ✨</p>
+    </div>
+    <!-- Documentation Section for Protected Text -->
+    <div class="doc-section">
+        <div class="doc-title">Protected Text</div>
+        <div class="doc-content">
+            <p>This text is <strong>protected</strong> and cannot be edited directly. 🔒</p>
+            <p>The editable section below is an example of a text area that users can type into, but any edits made will be monitored and protected by the StopEdit system.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Protected Text</h2>
+        <div id="editable-section" class="editable" contenteditable="true">
+            This section is editable! Feel free to type here. 🤦‍♂️
+        </div>
+        <div id="editable-section" class="" contenteditable="true">
+            This section is editable! Feel free to type here ✍️
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Protected Text</h2>
+        <div id="editable-section" class="editable" contenteditable="false">
+            This section is editable! Feel free to type here but only via inspect element 🔴
+        </div>
+        <div id="editable-section" class="" contenteditable="false">
+            This section is editable! Feel free to type here but only via inspect element 😎
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Protected Text</h2>
+        <div id="editable-section" class="editable">
+            This section is not editable! Why? because we did not add the editable-section id😃
+        </div>
+        <!-- the contenteditable="true will be ignored below -->
+        <div id="" class="" contenteditable="true">
+            This section is not editable! Why? because we did not add the editable-section id ✍️
+        </div>
+    </div>
+
+    <!-- Documentation Section for Protected Images -->
+    <div class="doc-section">
+        <div class="doc-title">Protected Images</div>
+        <div class="doc-content">            
+            <p>In this section, we have two images: one protected and the other normal. The protected image has special styling to distinguish it from the regular one.</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2>Protected Images</h2>
+        <div class="image-gallery">
+            <img src="https://img.freepik.com/free-photo/html-css-collage-concept-with-hacker_23-2150061984.jpg" alt="Protected image" class="protected-img" protected>
+            <img src="https://img.freepik.com/free-vector/soccer-stadium_1284-22432.jpg" alt="Normal image" class="normal-img">
+            <!-- video protection coming soon -->
+            <!-- <video width="640" height="360" controls>
+                <source src="https://velvettrades.com/assets/videos/Toro-Laptop.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video> -->
+            
+        </div>
+    </div>
+
+    <!-- Documentation Section for Footer and JS Initialization -->
+    <div class="doc-section">
+        <div class="doc-title">Footer & JavaScript Initialization</div>
+        <div class="doc-content">
+            <p>The footer contains credits for the StopEdit Team. Below that, JavaScript is used to initialize the StopEdit library.</p>
+            <p>This code enables automatic protection for text and images, and stops unauthorized edits. The functionality is powered by the `miragek-StopEdit.js` library.</p>
+        </div>
+    </div>
+
+    <footer>
+        Made with ❤️ by GODSENT <a href="https://miragek.com">for Miragek</a>
+    </footer>
+
+    <!-- External JS Library for StopEdit functionality -->
+    <script src="miragek-StopEdit.js"></script>
+
+    <script>
+        const stopEdit = new StopEdit({
+            selector: 'body', // Apply StopEdit to the entire body
+            heartbeat: 60000, // Check every 60 seconds to monitor any changes
+            debug: true, // Enable debug mode to see detailed logs
+            whitelist: ['#editable-section'] // Only the editable section is whitelisted for direct edits
+        });
+
+        stopEdit.init(); // Start the StopEdit functionality
+    </script>
+</body>
+</html>
