@@ -172,7 +172,7 @@ Please refer to the example.html for more complete examples with code snippets y
 
 ### [1.3.0] - Current
 
-Added more impressive features:
+Added some impressive features:
 - noCopy
 - noPrint
 - noScreenshot
