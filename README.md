@@ -153,11 +153,25 @@ JS
 
 
 HTML
-- **`contenteditable`**_(default: `true`)_: Make content be editable live on the screen. EG: <div id="" class="" contenteditable="true">some text</div>
-- **`editable-section`**_(default: `false`)_: Prevent editing when not set. EG:  <div id="editable-section" class="">Will be excluded from protection of edits</div>
-- **`protected`**_(default: `false`)_: Hide right click, download, exact url. EG: <img src="example.jpg" protected>
 
+```markdown
+- **`contenteditable`** _(default: `true`)_: Make content editable live on the screen.  
+  Example:  
+  ```html
+  <div id="" class="" contenteditable="true">some text</div>
+  ```
 
+- **`editable-section`** _(default: `false`)_: Prevent editing when not set.  
+  Example:  
+  ```html
+  <div id="editable-section" class="">Will be excluded from protection of edits</div>
+  ```
+
+- **`protected`** _(default: `false`)_: Hide right-click, download, or access to the exact URL.  
+  Example:  
+  ```html
+  <img src="example.jpg" protected>
+  ```
 --------------------------------------------------------------------------------
 
 ## 🔍 How It Works
