@@ -19,11 +19,12 @@ So, what actually is this my lib about? The shortest anser is that, "It let you 
 
 So, how did i fix a lot of problems by kicking thousands of potential attackers or bad guys away? I created STOPEDIT which by the end of this season would be able to do a lot of things. For now, the To-Do would keep you posted on what has been done. So, what is the motivation?
 
-- stop bad guys from making changes to your hosted live site by using inspect element, etc
-- stop bad guys from viewing the original url of images, from downloading images, etc
-- prevent aliens from scrapping your site just because they feel its good
-- block all kind of suspicious activities as long as they attempt any kind of "edit"
-- disable content copy, add watermark text, prevent printing, etc
+- Stop bad guys from making changes to your hosted live site by using inspect element, etc
+- Stop bad guys from viewing the original url of images, from downloading images, etc
+- Prevent aliens from scrapping your site just because they feel its good
+- Block all kind of suspicious activities as long as they attempt any kind of "edit"
+- Disable content copy, add watermark text, prevent printing, etc
+- Allows you decide what to whitelist from the library protection
 
 --------------------------------------------------------------------------------
 
@@ -74,10 +75,7 @@ Here's a complete example to get you started:
 
 ```html
 <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>StopEdit Example</title>
 </head>
 <body>
@@ -107,7 +105,7 @@ Here's a complete example to get you started:
   <div class="container">
       <h2>Protected Text</h2>
       <div id="editable-section" class="editable">
-          This section is not editable! Why? because we did not add the editable-section id😃
+          This section is not editable! Why? because we did not add the editable-section id 😃
       </div>
       <!-- the contenteditable="true will be ignored below -->
       <div id="" class="" contenteditable="true">
@@ -121,31 +119,44 @@ Here's a complete example to get you started:
 <!-- unprotected img -->
 <img src="example.jpg" alt="anything" class="anything">
 
+<!-- Include the StopEdit library -->
+<script src="path/to/StopEdit.js"></script>
+<script>
+  const guard = new StopEdit({
+    // basic rules
+    selector: 'body',  
+    heartbeat: 1000,   
+    debug: true        
+  });
 
-  <!-- Include the StopEdit library -->
-  <script src="path/to/StopEdit.js"></script>
-  <script>
-    const guard = new StopEdit({
-      selector: 'body',  
-      heartbeat: 1000,   
-      debug: true        
-    });
-
-    guard.init(); 
-  </script>
+  guard.init(); 
+</script>
 </body>
 </html>
 ```
 
-Please refer to the example.html for more complete examples with code snippets you can edit and play with to better understand the library. Please do this before you drop any hate speech. Say no to cyber bully. This lib/plugin is made by a PHP developer 😂. But feel safe and free to take it serious.
+Please refer to the example.html for more complete examples with code snippets you can edit and play with to better understand the library. Please do this before you drop any hate speech. Say no to cyber bully. This lib/plugin is made by a PHP developer 😂. But feel safe and free to take it serious. With the backend feature we would be releasing soon, our protection will increase to 100% focus and serious doing what its made to do which is "prevent even determined attackers from edits". Its your website not theirs. Let them go create their own site and exploit it. 🤣
 
 --------------------------------------------------------------------------------
 
 ## 🔧 Options
 
+JS
 - **`selector`** _(default: `'body'`)_: Target specific elements for protection.
-- **`heartbeat`** _(default: `1000` ms)_: Set the interval (in milliseconds) for monitoring changes.
+- **`heartbeat`** _(default: `100000` ms)_: Set the interval (in milliseconds) for monitoring changes.
 - **`debug`** _(default: `false`)_: Turn on logging to track actions in the console.
+- **`noCopy`**_(default: `false`)_: Prevent text selection and copy
+- **`noPrint`**_(default: `false`)_: Disallow users from printing exact page
+- **`noScreenshot`**_(default: `false`)_: Experimental feature
+- **`autoBlur`**_(default: `false`)_: Blur your site when their mouse is out
+- **`whitelist: ['#any-section-you-like']`**_(default: ``)_: You need to register all sections to exclude from default protection here. Apply with  <div id="any-section-you-like" class="any class"> normal contents </div>
+
+
+HTML
+- **`contenteditable`**_(default: `true`)_: Make content be editable live on the screen. EG: <div id="" class="" contenteditable="true">some text</div>
+- **`editable-section`**_(default: `false`)_: Prevent editing when not set. EG:  <div id="editable-section" class="">Will be excluded from protection of edits</div>
+- **`protected`**_(default: `false`)_: Hide right click, download, exact url. EG: <img src="example.jpg" protected>
+
 
 --------------------------------------------------------------------------------
 
