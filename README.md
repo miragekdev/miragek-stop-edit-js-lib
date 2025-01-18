@@ -154,7 +154,7 @@ JS
 
 HTML
 
-```markdown
+
 - **`contenteditable`** _(default: `true`)_: Make content editable live on the screen.  
   Example:  
   ```html
