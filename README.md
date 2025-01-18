@@ -187,7 +187,6 @@ HTML
 ### [Unreleased]
 
 - Video protection
-- Print blocker
 - Adblock detect
 - Device Blocker
 - Prevent Copy
