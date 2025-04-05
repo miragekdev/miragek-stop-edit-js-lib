@@ -5,9 +5,17 @@ class StopEdit {
     this.debug = options.debug || false;
     this.whitelist = options.whitelist || [];
     this.noCopy = options.noCopy || false;
+    this.customCopyText = options.customCopyText || null;
     this.noPrint = options.noPrint || false;
     this.noScreenshot = options.noScreenshot || false;
     this.autoBlur = options.autoBlur || false;
+    this.clickLimit = options.clickLimit || 10;
+    this.clickInterval = options.clickInterval || 3000;
+    this.onBlocked = options.onBlocked || this.defaultBlockedAlert;
+    this.clicks = 0;
+    this.clickTimeout = null;
+    this.blocked = false;
+
     this.originalContent = null;
     this.observer = null;
     this.whitelistMap = new Map();
@@ -16,38 +24,194 @@ class StopEdit {
     this.heartbeatInterval = null;
     this.editableElements = new Set();
     this.protected = new Set();
+
+    // Selection customization
+    this.selectionBackground = options.selectionBackground || null;
+    this.selectionTextColor = options.selectionTextColor || 'red';
+
+    // Lockout feature: Hardcoded password (configurable via options)
+    this.password = options.password || 'default_password';
   }
 
   init() {
     document.addEventListener('DOMContentLoaded', () => {
-      const target = document.querySelector(this.selector);
-      if (!target) {
-        console.error(`StopEdit: Selector "${this.selector}" not found.`);
-        return;
-      }
-
-      this.disableDirectEditing(target);
-      this.originalContent = this.cloneContent(target);
-      this.storeWhitelistElements(target);
-      this.startObserving(target);
-      this.initializeImageProtection(target);
-
-      if (this.heartbeat) {
-        this.startHeartbeat(target);
-      }
-
-      if (this.debug) {
-        console.log('StopEdit initialized: Protecting', this.selector);
-      }
-
-      this.addGlobalProtection();
-
-      // Add NoPrint.js features
-      if (this.noCopy || this.noPrint || this.noScreenshot || this.autoBlur) {
-        this.initializeNoPrintFeatures();
+      // Check authentication state
+      if (this.password && localStorage.getItem('stopedit_authenticated') !== 'true') {
+        this.showLoginOverlay(() => {
+          this.initializeProtections();
+        });
+      } else {
+        this.initializeProtections();
       }
     });
   }
+
+  initializeProtections() {
+    const target = document.querySelector(this.selector);
+    if (!target) {
+      console.error(`StopEdit: Selector "${this.selector}" not found.`);
+      return;
+    }
+
+    this.disableDirectEditing(target);
+    this.originalContent = this.cloneContent(target);
+    this.storeWhitelistElements(target);
+    this.startObserving(target);
+    this.initializeImageProtection(target);
+
+    if (this.heartbeat) {
+      this.startHeartbeat(target);
+    }
+
+    if (this.debug) {
+      console.log('StopEdit initialized: Protecting', this.selector);
+    }
+
+    this.addGlobalProtection();
+
+    if (this.noCopy || this.noPrint || this.noScreenshot || this.autoBlur) {
+      this.initializeNoPrintFeatures();
+    }
+
+    this.monitorClicks();
+
+    // Apply text selection style
+    this.applySelectionStyle();
+
+    // Add copyright feature for copying
+    document.addEventListener('copy', (event) => {
+      let selection = window.getSelection();
+      if (selection.rangeCount > 0) {
+        let range = selection.getRangeAt(0);
+        if (target.contains(range.startContainer) || target.contains(range.endContainer)) {
+          if (this.noCopy) {
+            event.preventDefault();
+          } else {
+            let clonedSelection = range.cloneContents();
+            let div = document.createElement('div');
+            div.appendChild(clonedSelection);
+            let html = div.innerHTML;
+            let selectedText = selection.toString();
+            let copyrightNotice = this.customCopyText || `Copied from ${window.location.href}`;
+            let textToCopy = `${selectedText}\n\n${copyrightNotice}`;
+            event.clipboardData.setData('text/plain', textToCopy);
+            event.clipboardData.setData('text/html', html);
+            event.preventDefault();
+          }
+        }
+      }
+    });
+  }
+
+  showLoginOverlay(callback) {
+    // Create overlay to cover the entire page
+    const overlay = document.createElement('div');
+    overlay.className = 'stopedit-login-overlay';
+    overlay.style.position = 'fixed';
+    overlay.style.top = '0';
+    overlay.style.left = '0';
+    overlay.style.width = '100%';
+    overlay.style.height = '100%';
+    overlay.style.background = 'white';
+    overlay.style.zIndex = '9999';
+    overlay.style.display = 'flex';
+    overlay.style.justifyContent = 'center';
+    overlay.style.alignItems = 'center';
+
+    // Create plain HTML login form with classes
+    const form = document.createElement('form');
+    form.className = 'stopedit-login-form';
+    form.innerHTML = `
+      <input type="password" class="stopedit-login-input" placeholder="Enter password">
+      <button type="submit" class="stopedit-login-button">Login</button>
+    `;
+
+    // Append form to overlay
+    overlay.appendChild(form);
+
+    // Append overlay to body
+    document.body.appendChild(overlay);
+
+    // Handle form submission
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const input = form.querySelector('.stopedit-login-input');
+      if (input.value === this.password) {
+        localStorage.setItem('stopedit_authenticated', 'true');
+        document.body.removeChild(overlay);
+        callback();
+      } else {
+        alert('Incorrect password');
+      }
+    });
+  }
+
+  applySelectionStyle() {
+    let style = document.createElement('style');
+    style.innerHTML = `
+      ${this.selector} ::selection {
+        color: ${this.selectionTextColor};
+        ${this.selectionBackground ? `background: ${this.selectionBackground};` : ''}
+      }
+    `;
+    document.head.appendChild(style);
+  }
+  
+  
+  
+  //////::::
+
+  monitorClicks() {  
+    document.addEventListener('click', () => {  
+      if (this.blocked) {  
+        this.onBlocked();  
+        return;  
+      }  
+
+      this.clicks++;  
+
+      if (this.clicks >= this.clickLimit) {  
+        this.blockUser();  
+        return;  
+      }  
+
+      if (!this.clickTimeout) {  
+        this.clickTimeout = setTimeout(() => {  
+          this.clicks = 0;  
+          this.clickTimeout = null;  
+        }, this.clickInterval);  
+      }  
+    });  
+  }  
+
+  blockUser() {  
+    this.blocked = true;  
+    this.disableScrolling();  
+    this.onBlocked();  
+  }  
+
+
+  disableScrolling() {
+    document.body.style.overflow = 'hidden';
+    document.addEventListener(
+      'wheel',
+      (e) => e.preventDefault(),
+      { passive: false }
+    );
+    document.addEventListener(
+      'touchmove',
+      (e) => e.preventDefault(),
+      { passive: false }
+    );
+  }
+
+  defaultBlockedAlert() {
+    alert('⚠ You are blocked from interacting due to excessive clicking.');
+  }
+
+  
+ //////// 
+  
 
   initializeNoPrintFeatures() {
     if (this.noCopy) {
@@ -372,4 +536,4 @@ class StopEdit {
       console.log('StopEdit: Protection disabled.');
     }
   }
-}
+  }
