@@ -1,236 +1,219 @@
+<?php
+// Basic PHP setup for serving the HTML page
+header('Content-Type: text/html; charset=UTF-8');
+?>
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>StopEdit - Cool Edition 😎</title>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      width: 90%;
-      margin: 0 auto;
-      padding: 20px;
-      background: #f9f9f9;
-      color: #333;
-      line-height: 1.6;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StopEdit Demo - Miragek Protection 💀🔥</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #f5f7fa;
+            color: #2c3e50;
+            line-height: 1.7;
+        }
 
-    h1,
-    h2 {
-      color: #2c3e50;
-    }
+        h1, h2 {
+            color: #1a5276;
+            text-align: center;
+        }
 
-    .container {
-      background: #ffffff;
-      border: 1px solid #e0e0e0;
-      border-radius: 8px;
-      padding: 20px;
-      margin: 20px 0;
-      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
+        .container {
+            background: #ffffff;
+            border: 1px solid #dfe6e9;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    .editable {
-      background: #fef7e7;
-      padding: 15px;
-      border: 1px dashed #f39c12;
-      border-radius: 4px;
-      color: #555;
-      margin-top: 10px;
-    }
+        .editable {
+            background: #fff8e1;
+            padding: 15px;
+            border: 2px dashed #e67e22;
+            border-radius: 6px;
+            color: #444;
+            margin: 10px 0;
+        }
 
-    .image-gallery {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      justify-content: center;
-      margin-top: 20px;
-    }
+        .image-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 15px;
+            justify-items: center;
+            margin: 20px 0;
+        }
 
-    .image-gallery img {
-      height: 150px;
-      width: 150px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 2px solid #ddd;
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
+        .image-gallery img {
+            width: 150px;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #b0bec5;
+            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
 
-    .image-gallery .protected-img {
-      border: 2px solid #3498db;
-      background: #eaf4ff;
-    }
+        .image-gallery .protected-img {
+            border: 2px solid #3498db;
+            background: #e6f3ff;
+        }
 
-    .image-gallery img:hover {
-      transform: scale(1.05);
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    }
+        .image-gallery img:hover {
+            transform: scale(1.08);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+        }
 
-    footer {
-      text-align: center;
-      margin-top: 20px;
-      font-size: 14px;
-      color: #777;
-    }
+        .doc-section {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-family: 'Courier New', Courier, monospace;
+            border-left: 4px solid #3498db;
+        }
 
-    footer a {
-      color: #3498db;
-      text-decoration: none;
-    }
+        .doc-title {
+            font-weight: bold;
+            color: #1a5276;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
 
-    /* Added styles for the documentation */
-    .doc-section {
-      background: #f0f0f0;
-      padding: 15px;
-      border-radius: 8px;
-      margin-bottom: 20px;
-      font-family: 'Courier New', Courier, monospace;
-    }
+        .doc-content {
+            font-size: 0.95em;
+            color: #34495e;
+        }
 
-    .doc-title {
-      font-weight: bold;
-      color: #2c3e50;
-    }
+        .password-notice {
+            background: #ffeaa7;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            color: #d35400;
+            margin: 20px 0;
+            border: 1px solid #f1c40f;
+        }
 
-    .doc-content {
-      margin-top: 10px;
-      font-size: 14px;
-      color: #555;
-    }
-  </style>
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            font-size: 0.9em;
+            color: #7f8c8d;
+        }
+
+        footer a {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        footer a:hover {
+            text-decoration: underline;
+        }
+    </style>
 </head>
-
 <body>
-  <div style="text-align: center;">
-    <h1>StopEdit Demo - Protect Your Content 🛡️</h1>
-
-    <p>
-      Explore the power of protected text and images. Try editing and see the magic! ✨
-    </p>
-  </div>
-  <!-- Documentation Section for Protected Text -->
-  <div class="doc-section">
-    <div class="doc-title">
-      Protected Text
+    <h1>StopEdit Demo - Lock It Down! 🛡️💀</h1>
+    <div class="password-notice">
+        Demo Password: <strong>123</strong> (Enter this to unlock the page! 😎)
     </div>
-    <div class="doc-content">
-      <p>
-        This text is <strong>protected</strong> and cannot be edited directly. 🔒
-      </p>
-      <p>
-        The editable section below is an example of a text area that users can type into, but any edits made will
-        be monitored and protected by the StopEdit system.
-      </p>
-    </div>
-  </div>
 
-  <div class="container">
-    <h2>Protected Text</h2>
-    <div id="editable-section" class="editable" contenteditable="true">
-      This section is editable! Feel free to type here. 🤦‍♂️
+    <div class="doc-section">
+        <div class="doc-title">Protected Text</div>
+        <div class="doc-content">
+            <p>This content is guarded by StopEdit. Try messing with it via Inspect Element—it’ll snap back faster than you can say "hacker"! 🔒</p>
+            <p>The editable sections below are whitelisted, so users can type there. Everything else? Locked down tight.</p>
+        </div>
     </div>
-    <div id="editable-section" class="" contenteditable="true">
-      This section is editable! Feel free to type here ✍️
+
+    <div class="container">
+        <h2>Text Protection</h2>
+        <div id="editable-section" class="editable" contenteditable="true">
+            Whitelisted section! Type away, you’re allowed here. ✍️😃
+        </div>
+        <div id="protected-section" contenteditable="false">
+            This is locked! Try editing via dev tools—StopEdit will laugh at you. 😎🔴
+        </div>
     </div>
-  </div>
 
-  <div class="container">
-    <h2>Protected Text</h2>
-    <div id="editable-section" class="editable" contenteditable="false">
-      This section is editable! Feel free to type here but only via inspect element 🔴
+    <div class="container">
+        <h2>Non-Editable Content</h2>
+        <div class="editable">
+            No `id="editable-section"` here, so it’s protected! Try adding `contenteditable` via Inspect Element—won’t work! 😭
+        </div>
+        <div contenteditable="true">
+            This has `contenteditable="true"`, but no whitelist, so it’s still locked. StopEdit rules! 💀
+        </div>
     </div>
-    <div id="editable-section" class="" contenteditable="false">
-      This section is editable! Feel free to type here but only via inspect element 😎
+
+    <div class="doc-section">
+        <div class="doc-title">Protected Images</div>
+        <div class="doc-content">
+            <p>Images with the `protected` attribute are shielded from right-clicks and downloads. Normal images are fair game.</p>
+            <p>Try saving the protected image—good luck! 😜</p>
+        </div>
     </div>
-  </div>
 
-  <div class="container">
-    <h2>Protected Text</h2>
-    <div id="editable-section" class="editable">
-      This section is not editable! Why? because we did not add the editable-section id😃
+    <div class="container">
+        <h2>Image Protection</h2>
+        <div class="image-gallery">
+            <img src="https://via.placeholder.com/150?text=Protected" alt="Protected Image" class="protected-img" protected>
+            <img src="https://via.placeholder.com/150?text=Normal" alt="Normal Image" class="normal-img">
+        </div>
     </div>
-    <!-- the contenteditable="true will be ignored below -->
-    <div id="" class="" contenteditable="true">
-      This section is not editable! Why? because we did not add the editable-section id ✍️
+
+    <div class="doc-section">
+        <div class="doc-title">Features in Action</div>
+        <div class="doc-content">
+            <p>Test these out:</p>
+            <ul>
+                <li><strong>Click Limit</strong>: Click 5 times in 2 seconds to get blocked. 🚨</li>
+                <li><strong>Text Selection</strong>: Select text to see green text on a yellow background. ✨</li>
+                <li><strong>Copying</strong>: Copy text to see the custom watermark (copying allowed).</li>
+                <li><strong>Printing</strong>: Try printing—blocked! 🖨️</li>
+                <li><strong>Blur</strong>: Move your mouse out of the page to see it blur. 😶‍🌫️</li>
+                <li><strong>Password</strong>: Enter "123" to unlock the page. 🔐</li>
+            </ul>
+            <p>Screenshot protection is disabled for this demo, so you can snap away!</p>
+        </div>
     </div>
-  </div>
 
-  <!-- Documentation Section for Protected Images -->
-  <div class="doc-section">
-    <div class="doc-title">
-      Protected Images
-    </div>
-    <div class="doc-content">
-      <p>
-        In this section, we have two images: one protected and the other normal. The protected image has special
-        styling to distinguish it from the regular one.
-      </p>
-    </div>
-  </div>
+    <footer>
+        Built with ❤️ by Godsent for <a href="https://miragek.dev">Miragek</a>. PHP dev power! 😂🔥
+    </footer>
 
-  <div class="container">
-    <h2>Protected Images</h2>
-    <div class="image-gallery">
-      <img src="https://img.freepik.com/free-photo/html-css-collage-concept-with-hacker_23-2150061984.jpg"
-      alt="Protected image" class="protected-img" protected>
-      <img src="https://img.freepik.com/free-vector/soccer-stadium_1284-22432.jpg" alt="Normal image"
-      class="normal-img">
-      <!-- video protection coming soon -->
-      <!-- <video width="640" height="360" controls>
-                      <source src="https://velvettrades.com/assets/videos/Toro-Laptop.mp4" type="video/mp4">
-                      Your browser does not support the video tag.
-                  </video> -->
+    <!-- External StopEdit library (assumed in the same directory) -->
+    <script src="miragek-StopEdit.js"></script>
+    <script>
+        const stopEdit = new StopEdit({
+            selector: 'body', // Protect the entire body
+            heartbeat: 5000, // Check every 5 seconds
+            debug: true, // Log everything
+            whitelist: ['#editable-section'], // Allow edits here
+            noCopy: false, // Allow copying with watermark
+            customCopyText: 'Copied from Miragek Demo (https://miragek.dev)', // Watermark for copied text
+            noPrint: true, // Block printing
+            noScreenshot: false, // Disabled for demo
+            autoBlur: true, // Blur on mouse leave
+            clickLimit: 5, // Block after 5 clicks
+            clickInterval: 2000, // Within 2 seconds
+            onBlocked: () => alert('🚨 Chill out, too many clicks! Take a break! 😭💀'),
+            selectionBackground: 'yellow', // Yellow selection background
+            selectionTextColor: 'green', // Green selection text
 
-    </div>
-  </div>
-
-  <!-- Documentation Section for Footer and JS Initialization -->
-  <div class="doc-section">
-    <div class="doc-title">
-      Footer & JavaScript Initialization
-    </div>
-    <div class="doc-content">
-      <p>
-        The footer contains credits for the StopEdit Team. Below that, JavaScript is used to initialize the
-        StopEdit library.
-      </p>
-      <p>
-        This code enables automatic protection for text and images, and stops unauthorized edits. The
-        functionality is powered by the `miragek-StopEdit.js` library.
-      </p>
-    </div>
-  </div>
-
-  <footer>
-    Made with ❤️ by GODSENT <a href="https://miragek.com">for Miragek</a>
-  </footer>
-
-  <!-- External JS Library for StopEdit functionality -->
-  <script src="lib.js"></script>
-
-  <script>
-    const stopEdit = new StopEdit({
-      selector: 'body', // Apply StopEdit to the entire body
-      heartbeat: 60000, // Check every 60 seconds to monitor any changes
-      debug: true,
-      noCopy: false,
-      password: 'secret',
-      noPrint: true,
-      noScreenshot: true,
-      autoBlur: true,
-      whitelist: ['#editable-section'], // Only the editable section is whitelisted for direct edits
-      clickLimit: 5,
-      clickInterval: 2000,
-      onBlocked: () => alert('🚨 Chill! Too many clicks detected.'),
-      selectionBackground: 'yellow', // Optional
-      selectionTextColor: 'green', // Optional (default: red) selecting
-      customCopyText: 'Text copied from Example Site' 
-
-    });
-
-    stopEdit.init(); // Start the StopEdit functionality
-  </script>
+            detectAdblock: true, // Enable adblock detection
+            onAdblockDetected: () => alert('🚫 Yo, disable that adblocker to support us! 😜'),
+            password: '123' // Demo password
+        });
+        stopEdit.init(); // Fire it up!
+    </script>
 </body>
-
 </html>

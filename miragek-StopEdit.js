@@ -12,6 +12,9 @@ class StopEdit {
     this.clickLimit = options.clickLimit || 10;
     this.clickInterval = options.clickInterval || 3000;
     this.onBlocked = options.onBlocked || this.defaultBlockedAlert;
+    this.detectAdblock = options.detectAdblock || false;
+    this.onAdblockDetected = options.onAdblockDetected || this.defaultAdblockAlert;
+    this.adblockRecheckDelay = options.adblockRecheckDelay || 5000; // Delay before re-showing overlay (ms)
     this.clicks = 0;
     this.clickTimeout = null;
     this.blocked = false;
@@ -24,6 +27,8 @@ class StopEdit {
     this.heartbeatInterval = null;
     this.editableElements = new Set();
     this.protected = new Set();
+    this.adblockOverlay = null; // Store overlay for re-showing
+    this.adblockCheckInterval = null; // Interval for re-checking adblock
 
     // Selection customization
     this.selectionBackground = options.selectionBackground || null;
@@ -39,10 +44,86 @@ class StopEdit {
       if (this.password && localStorage.getItem('stopedit_authenticated') !== 'true') {
         this.showLoginOverlay(() => {
           this.initializeProtections();
+          if (this.detectAdblock) this.checkAdblock();
         });
       } else {
         this.initializeProtections();
+        if (this.detectAdblock) this.checkAdblock();
       }
+    });
+  }
+
+  checkAdblock() {
+    const bait = document.createElement('div');
+    bait.setAttribute('class', 'ad-banner ads ad-unit');
+    bait.style.position = 'absolute';
+    bait.style.top = '-9999px';
+    bait.style.width = '1px';
+    bait.style.height = '1px';
+    document.body.appendChild(bait);
+
+    setTimeout(() => {
+      const isBlocked = bait.offsetWidth === 0 || bait.offsetHeight === 0 || window.getComputedStyle(bait).display === 'none';
+      document.body.removeChild(bait);
+
+      if (isBlocked) {
+        if (this.debug) console.log('StopEdit: Adblocker detected! Showing persistent overlay.');
+        this.onAdblockDetected();
+        // Start re-checking to ensure adblocker is still active
+        this.adblockCheckInterval = setInterval(() => {
+          if (!this.adblockOverlay || !document.body.contains(this.adblockOverlay)) {
+            if (this.debug) console.log('StopEdit: Adblock overlay closed, re-showing after delay.');
+            this.onAdblockDetected();
+          }
+        }, this.adblockRecheckDelay);
+      } else {
+        if (this.debug) console.log('StopEdit: No adblocker detected.');
+        if (this.adblockCheckInterval) {
+          clearInterval(this.adblockCheckInterval);
+          this.adblockCheckInterval = null;
+        }
+      }
+    }, 100);
+  }
+
+  defaultAdblockAlert() {
+    if (this.adblockOverlay && document.body.contains(this.adblockOverlay)) {
+      return; // Prevent multiple overlays
+    }
+
+    this.adblockOverlay = document.createElement('div');
+    this.adblockOverlay.className = 'stopedit-adblock-overlay';
+    this.adblockOverlay.style.position = 'fixed';
+    this.adblockOverlay.style.top = '0';
+    this.adblockOverlay.style.left = '0';
+    this.adblockOverlay.style.width = '100%';
+    this.adblockOverlay.style.height = '100%';
+    this.adblockOverlay.style.background = 'rgba(0, 0, 0, 0.85)';
+    this.adblockOverlay.style.zIndex = '10000';
+    this.adblockOverlay.style.display = 'flex';
+    this.adblockOverlay.style.justifyContent = 'center';
+    this.adblockOverlay.style.alignItems = 'center';
+    this.adblockOverlay.style.color = '#fff';
+    this.adblockOverlay.style.fontFamily = 'Arial, sans-serif';
+    this.adblockOverlay.style.textAlign = 'center';
+
+    this.adblockOverlay.innerHTML = `
+      <div style="background: #e74c3c; padding: 20px; border-radius: 8px; max-width: 500px;">
+        <h2>🚫 Adblocker Detected! 😭</h2>
+        <p>Please disable your adblocker to support this site. Ads keep us running! 💸</p>
+        <p>Click below to try again, but we’ll keep asking until you do! 😜</p>
+        <button class="stopedit-adblock-close" style="background: #3498db; color: white; padding: 10px 20px; border: none; border-radius: 5px; cursor: pointer; margin-top: 10px;">Try Again</button>
+      </div>
+    `;
+
+    document.body.appendChild(this.adblockOverlay);
+
+    const closeButton = this.adblockOverlay.querySelector('.stopedit-adblock-close');
+    closeButton.addEventListener('click', () => {
+      if (this.debug) console.log('StopEdit: Adblock overlay closed by user.');
+      document.body.removeChild(this.adblockOverlay);
+      this.adblockOverlay = null;
+      // Overlay will reappear due to adblockCheckInterval
     });
   }
 
@@ -104,7 +185,6 @@ class StopEdit {
   }
 
   showLoginOverlay(callback) {
-    // Create overlay to cover the entire page
     const overlay = document.createElement('div');
     overlay.className = 'stopedit-login-overlay';
     overlay.style.position = 'fixed';
@@ -118,7 +198,6 @@ class StopEdit {
     overlay.style.justifyContent = 'center';
     overlay.style.alignItems = 'center';
 
-    // Create plain HTML login form with classes
     const form = document.createElement('form');
     form.className = 'stopedit-login-form';
     form.innerHTML = `
@@ -126,13 +205,9 @@ class StopEdit {
       <button type="submit" class="stopedit-login-button">Login</button>
     `;
 
-    // Append form to overlay
     overlay.appendChild(form);
-
-    // Append overlay to body
     document.body.appendChild(overlay);
 
-    // Handle form submission
     form.addEventListener('submit', (event) => {
       event.preventDefault();
       const input = form.querySelector('.stopedit-login-input');
@@ -156,40 +231,35 @@ class StopEdit {
     `;
     document.head.appendChild(style);
   }
-  
-  
-  
-  //////::::
 
-  monitorClicks() {  
-    document.addEventListener('click', () => {  
-      if (this.blocked) {  
-        this.onBlocked();  
-        return;  
-      }  
+  monitorClicks() {
+    document.addEventListener('click', () => {
+      if (this.blocked) {
+        this.onBlocked();
+        return;
+      }
 
-      this.clicks++;  
+      this.clicks++;
 
-      if (this.clicks >= this.clickLimit) {  
-        this.blockUser();  
-        return;  
-      }  
+      if (this.clicks >= this.clickLimit) {
+        this.blockUser();
+        return;
+      }
 
-      if (!this.clickTimeout) {  
-        this.clickTimeout = setTimeout(() => {  
-          this.clicks = 0;  
-          this.clickTimeout = null;  
-        }, this.clickInterval);  
-      }  
-    });  
-  }  
+      if (!this.clickTimeout) {
+        this.clickTimeout = setTimeout(() => {
+          this.clicks = 0;
+          this.clickTimeout = null;
+        }, this.clickInterval);
+      }
+    });
+  }
 
-  blockUser() {  
-    this.blocked = true;  
-    this.disableScrolling();  
-    this.onBlocked();  
-  }  
-
+  blockUser() {
+    this.blocked = true;
+    this.disableScrolling();
+    this.onBlocked();
+  }
 
   disableScrolling() {
     document.body.style.overflow = 'hidden';
@@ -208,10 +278,6 @@ class StopEdit {
   defaultBlockedAlert() {
     alert('⚠ You are blocked from interacting due to excessive clicking.');
   }
-
-  
- //////// 
-  
 
   initializeNoPrintFeatures() {
     if (this.noCopy) {
@@ -263,10 +329,9 @@ class StopEdit {
   }
 
   addGlobalProtection() {
-    // Prevent common keyboard shortcuts
     document.addEventListener('keydown', (e) => {
-      if ((e.ctrlKey || e.metaKey) && 
-          (e.key === 'c' || e.key === 'C' || 
+      if ((e.ctrlKey || e.metaKey) &&
+          (e.key === 'c' || e.key === 'C' ||
            e.key === 'x' || e.key === 'X' ||
            e.key === 's' || e.key === 'S' ||
            e.key === 'p' || e.key === 'P')) {
@@ -275,7 +340,6 @@ class StopEdit {
       }
     });
 
-    // Prevent right-click on protected elements
     document.addEventListener('contextmenu', (e) => {
       if (this.isProtected(e.target)) {
         e.preventDefault();
@@ -290,7 +354,6 @@ class StopEdit {
       this.protect(protectedImages);
     }
 
-    // Watch for dynamically added images
     this.observeNewImages(target);
   }
 
@@ -336,45 +399,28 @@ class StopEdit {
     if (this.protected.has(img)) return;
 
     const canvas = document.createElement('canvas');
-
-    // Use specified dimensions for consistent sizing
-    const width = 150; // Desired width
-    const height = 150; // Desired height
+    const width = 150;
+    const height = 150;
     canvas.width = width;
     canvas.height = height;
 
     const ctx = canvas.getContext('2d');
-
-    // Apply smoothing for better quality
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
-
-    // Draw image scaled to the specified dimensions
     ctx.drawImage(img, 0, 0, width, height);
 
-    // Preserve original image attributes
     canvas.className = img.className;
     canvas.id = img.id;
     canvas.setAttribute('protected', '');
-
-    // Apply the same inline styles as the original image
     canvas.style.cssText = window.getComputedStyle(img).cssText;
-
-    // Override size-specific styles to ensure proper dimensions
     canvas.style.width = `${width}px`;
     canvas.style.height = `${height}px`;
 
-    // Add protection (e.g., disable interaction or prevent saving)
     this.addProtectionEvents(canvas);
-
-    // Replace original image
     img.parentNode.insertBefore(canvas, img);
     img.remove();
-
-    // Mark as protected
     this.protected.add(canvas);
-}
-
+  }
 
   addProtectionEvents(element) {
     const events = ['contextmenu', 'dragstart', 'selectstart', 'copy', 'cut'];
@@ -406,10 +452,7 @@ class StopEdit {
     }, this.heartbeat);
   }
 
-
-
   disableDirectEditing(target) {
-    // Remove contenteditable from non-whitelisted elements
     const allEditableElements = target.querySelectorAll('[contenteditable="true"]');
     allEditableElements.forEach(el => {
       if (!this.isWhitelisted(el)) {
@@ -422,24 +465,18 @@ class StopEdit {
 
   storeWhitelistElements(target) {
     this.whitelist.forEach(selector => {
-        const elements = target.querySelectorAll(selector);
-        elements.forEach((el, index) => {
-            const key = `${selector}-${index}`;
-            const clone = el.cloneNode(true);
-
-            // Preserve the original contentEditable state from the HTML
-            clone.contentEditable = el.contentEditable;
-
-            this.whitelistMap.set(key, clone);
-        });
+      const elements = target.querySelectorAll(selector);
+      elements.forEach((el, index) => {
+        const key = `${selector}-${index}`;
+        const clone = el.cloneNode(true);
+        clone.contentEditable = el.contentEditable;
+        this.whitelistMap.set(key, clone);
+      });
     });
-}
-
+  }
 
   cloneContent(target) {
     const clone = target.cloneNode(true);
-    
-    // Remove whitelisted elements from the clone
     this.whitelist.forEach(selector => {
       const elements = clone.querySelectorAll(selector);
       elements.forEach(el => {
@@ -448,7 +485,6 @@ class StopEdit {
         el.parentNode.replaceChild(placeholder, el);
       });
     });
-
     return clone;
   }
 
@@ -458,10 +494,9 @@ class StopEdit {
         console.log('StopEdit: Detected mutations', mutations);
       }
 
-      // Check if mutations affect whitelisted elements
       const affectsWhitelist = mutations.some(mutation => {
         return this.whitelist.some(selector => {
-          return mutation.target.matches?.(selector) || 
+          return mutation.target.matches?.(selector) ||
                  mutation.target.closest?.(selector);
         });
       });
@@ -482,11 +517,10 @@ class StopEdit {
 
   resetIfChanged(target) {
     if (this.resetting) return;
-    
+
     this.resetting = true;
     this.observer.disconnect();
 
-    // Store current whitelist content
     const whitelistContent = new Map();
     this.whitelist.forEach(selector => {
       const elements = target.querySelectorAll(selector);
@@ -495,10 +529,8 @@ class StopEdit {
       });
     });
 
-    // Reset to original content
     target.innerHTML = this.originalContent.innerHTML;
 
-    // Restore whitelist elements with their current content
     this.whitelist.forEach(selector => {
       const placeholders = target.querySelectorAll(`[data-whitelist-placeholder="${selector}"]`);
       placeholders.forEach((placeholder, index) => {
@@ -512,9 +544,7 @@ class StopEdit {
       });
     });
 
-    // Reapply image protection after reset
     this.initializeImageProtection(target);
-
     this.startObserving(target);
     this.resetting = false;
   }
@@ -532,8 +562,15 @@ class StopEdit {
     if (this.heartbeatInterval) {
       clearInterval(this.heartbeatInterval);
     }
+    if (this.adblockCheckInterval) {
+      clearInterval(this.adblockCheckInterval);
+    }
+    if (this.adblockOverlay) {
+      document.body.removeChild(this.adblockOverlay);
+      this.adblockOverlay = null;
+    }
     if (this.debug) {
       console.log('StopEdit: Protection disabled.');
     }
   }
-  }
+}
