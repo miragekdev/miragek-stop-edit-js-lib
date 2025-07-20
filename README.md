@@ -169,10 +169,7 @@ Check out `example.html` in the repo for more snippets to play with. Test it bef
 | `clickInterval`       | Number   | `3000`                  | Time window (ms) for counting clicks.                                       |
 | `onBlocked`           | Function | `defaultBlockedAlert`   | Callback when user is blocked due to excessive clicking.                    |
 | `selectionBackground` | String   | `null`                  | Background color for selected text.                                         |
-
 | `detectAdblock` | Boolean   | `false`                  | Prevent people with adblockers.                                        |
-
-
 | `selectionTextColor`  | String   | `'red'`                 | Text color for selected text.                                              |
 | `password`            | String   | `'default_password'`    | Password for accessing protected content.                                   |
 
