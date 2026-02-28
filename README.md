@@ -16,7 +16,6 @@ StopEdit is a simple JavaScript library designed to keep your webpage safe from 
 - **Password Protection**: Locks the page behind a password for extra security.
 - **Custom Text Selection**: Style selected text with custom colors for that extra flair.
 - **Whitelist Support**: Exempt specific elements from protection for user-friendly interactions.
-- **Debugging Tools**: Detailed console logs to help you debug like a pro.
 
 --------------------------------------------------------------------------------
 
@@ -56,237 +55,227 @@ Grab StopEdit and plug it into your project:
 <script src="path/to/StopEdit.js"></script>
 ```
 
---------------------------------------------------------------------------------
+## Features
 
-## 🛠️ Usage
+| Feature | Option | Default |
+|---|---|---|
+| Block text selection & copy | `noCopy` | `false` |
+| Copy with attribution watermark | `customCopyText` | URL of page |
+| Block printing | `noPrint` | `false` |
+| Blur on mouse leave | `autoBlur` | `false` |
+| Block PrintScreen | `noScreenshot` | `false` |
+| DOM mutation revert | `heartbeat` | `100000` ms |
+| Click rate limiting | `clickLimit` | `10` |
+| Adblock detection | `detectAdblock` | `false` |
+| Password gate | `password` | `null` |
+| Image canvas protection | `protected` attr on `<img>` | — |
+| Whitelisted editable zones | `whitelist` | `[]` |
 
-Setting up StopEdit is as easy as roasting a script kiddie. Here’s how to get started:
+---
 
-### Core Feature
-Protect your page with a simple setup:
+## Installation
 
-```javascript
-const guard = new StopEdit({
-  selector: 'body', // Protect the entire body
-  heartbeat: 60000, // Check for changes every 60 seconds
-  debug: true, // Log everything for debugging
-  noCopy: true, // Block copying
-  noPrint: true, // Block printing
-  noScreenshot: true, // Try to block screenshots
-});
-guard.init(); // Start the protection
-```
-
-### Image Protection
-Mark images as protected to prevent downloads or right-clicks:
+Drop the script into your page. No npm, no build step.
 
 ```html
-<img src="example.jpg" alt="My Image" protected>
+<script src="StopEdit.js"></script>
 ```
 
-### Password Protection
-Enable a password to lock the page until authenticated:
+---
 
-```javascript
-const guard = new StopEdit({
-  selector: '#protected-content',
-  password: 'superSecret123'
+## Quick Start
+
+```js
+const protection = new StopEdit({
+  selector: '#my-content',
+  noCopy: true,
+  noPrint: true,
 });
-guard.init(); // Shows a login overlay until the correct password is entered
+protection.init();
 ```
 
---------------------------------------------------------------------------------
+---
 
-## 🧩 Example
+## Options
 
-Here’s a full example to see StopEdit in action:
+### `selector` · `string` · default `'body'`
+CSS selector for the element to protect. Use a specific ID for precision — avoid `:first-of-type` / `:last-of-type` which resolve by tag, not class.
+
+```js
+selector: '#article-body'
+```
+
+---
+
+### `noCopy` · `boolean` · default `false`
+When `true`, disables all text selection and copying inside the protected element — mouse drag, Ctrl+A, Ctrl+C, and right-click are all blocked.
+
+When `false`, copy is permitted but a copyright notice is appended to the clipboard in both `text/plain` and `text/html` formats.
+
+```js
+noCopy: true
+```
+
+---
+
+### `customCopyText` · `string | null` · default `null`
+The attribution string appended when `noCopy: false`. Defaults to the current page URL.
+
+```js
+customCopyText: 'Copied from My Site — https://example.com'
+```
+
+---
+
+### `whitelist` · `string[]` · default `[]`
+CSS selectors for child elements that should remain editable and selectable even when `noCopy: true`. The matching elements are also restored after any DOM mutation revert.
+
+```js
+whitelist: ['#comment-box', '.user-input']
+```
+
+---
+
+### `noPrint` · `boolean` · default `false`
+Intercepts Ctrl+P and injects a print stylesheet that hides `body`, preventing the page from printing.
+
+```js
+noPrint: true
+```
+
+---
+
+### `autoBlur` · `boolean` · default `false`
+Applies a `blur(5px)` CSS filter to `body` when the cursor leaves the browser window or the page loses focus. Clears on re-entry.
+
+```js
+autoBlur: true
+```
+
+---
+
+### `noScreenshot` · `boolean` · default `false`
+Clears the clipboard immediately after the PrintScreen key is released, nullifying most screenshot-to-clipboard workflows.
+
+```js
+noScreenshot: true
+```
+
+---
+
+### `heartbeat` · `number` · default `100000` (ms)
+Interval in milliseconds at which StopEdit checks for DOM mutations and reverts any unauthorised changes. Set to `0` to disable.
+
+```js
+heartbeat: 5000   // check every 5 seconds
+```
+
+---
+
+### `clickLimit` · `number` · default `10`  
+### `clickInterval` · `number` · default `3000` (ms)
+If the user clicks more than `clickLimit` times within `clickInterval` milliseconds, they are blocked from further interaction. Triggers `onBlocked`.
+
+```js
+clickLimit: 5,
+clickInterval: 2000,
+```
+
+---
+
+### `onBlocked` · `function`
+Callback fired when the click limit is exceeded. Defaults to a plain `alert`.
+
+```js
+onBlocked: () => showToast('Too many clicks — slow down!')
+```
+
+---
+
+### `detectAdblock` · `boolean` · default `false`
+Injects a hidden bait element on boot. If an adblocker hides it, `onAdblockDetected` is called. The check re-runs every `adblockRecheckDelay` ms to re-show the overlay if dismissed.
+
+```js
+detectAdblock: true,
+adblockRecheckDelay: 5000,
+```
+
+---
+
+### `onAdblockDetected` · `function`
+Callback fired when an adblocker is detected. Defaults to a full-screen overlay with a "Try Again" button.
+
+```js
+onAdblockDetected: () => document.getElementById('adblock-banner').style.display = 'block'
+```
+
+---
+
+### `password` · `string | null` · default `null`
+When set, shows a full-screen password overlay on load. The correct password is stored in `localStorage` so returning visitors are not re-prompted. Clear `localStorage.removeItem('stopedit_authenticated')` to force re-authentication.
+
+```js
+password: 'mysecret'
+```
+
+---
+
+### `selectionBackground` · `string | null`  
+### `selectionTextColor` · `string` · default `'red'`
+Styles the `::selection` pseudo-element within the protected selector. Only applied when `noCopy: false` (pointless to style a selection that can't be made).
+
+```js
+selectionBackground: 'yellow',
+selectionTextColor: 'green',
+```
+
+---
+
+## Image Protection
+
+Add the `protected` attribute to any `<img>` inside the protected selector. StopEdit replaces it with a `<canvas>` at load time, blocking right-click save, drag-and-drop, and clipboard copy.
 
 ```html
-<!DOCTYPE html>
-<head>
-  <title>StopEdit Example</title>
-</head>
-<body>
-  <h1>Protected Content</h1>
-  <p>This text is locked down. Try editing it—StopEdit will reset it!</p>
-
-  <div class="container">
-    <h2>Editable Section</h2>
-    <div id="editable-section" class="editable" contenteditable="true">
-      This section is whitelisted! Type away. ✍️
-    </div>
-    <div id="protected-section" contenteditable="false">
-      This section is locked. Try editing via Inspect Element—good luck! 🔴
-    </div>
-  </div>
-
-  <div class="container">
-    <h2>Image Protection</h2>
-    <img src="example.jpg" alt="Protected Image" protected>
-    <img src="example2.jpg" alt="Unprotected Image">
-  </div>
-
-  <!-- Include the StopEdit library -->
-  <script src="path/to/StopEdit.js"></script>
-  <script>
-    const guard = new StopEdit({
-      selector: 'body',
-      heartbeat: 1000,
-      debug: true,
-      noCopy: true,
-      whitelist: ['#editable-section'],
-      password: 'mySecretPass123',
-      clickLimit: 5,
-      clickInterval: 2000,
-      onBlocked: () => alert('Chill out, too many clicks! 😭'),
-      selectionBackground: 'yellow'
-    });
-    guard.init();
-  </script>
-</body>
-</html>
+<img src="photo.jpg" alt="My photo" protected>
 ```
 
-Check out `example.html` in the repo for more snippets to play with. Test it before you roast it—say no to cyberbullying! This lib is crafted by a PHP dev (yours truly 😂), but it’s serious about protecting your site. Backend features are coming to make it 100% bulletproof. Tell those hackers to go build their own site! 💀🔥
+New protected images added dynamically are detected automatically via a `MutationObserver`.
 
---------------------------------------------------------------------------------
+---
 
-## 🔧 Options
+## Multiple Zones
 
-### JavaScript Options
-| Option                | Type     | Default                 | Description                                                                 |
-|-----------------------|----------|-------------------------|-----------------------------------------------------------------------------|
-| `selector`            | String   | `'body'`                | CSS selector for protected elements.                                        |
-| `heartbeat`           | Number   | `100000`                | Interval (ms) for content change checks. Set to `0` to disable.             |
-| `debug`               | Boolean  | `false`                 | Enable console logs for debugging.                                          |
-| `whitelist`           | Array    | `[]`                    | CSS selectors for elements exempt from protection.                          |
-| `noCopy`              | Boolean  | `false`                 | Prevent copying of content.                                                 |
-| `customCopyText`      | String   | `null`                  | Custom text appended to copied content.                                     |
-| `noPrint`             | Boolean  | `false`                 | Prevent printing of the page.                                               |
-| `noScreenshot`        | Boolean  | `false`                 | Attempt to block screenshots (experimental).                                |
-| `autoBlur`            | Boolean  | `false`                 | Blur content when the user leaves the page.                                 |
-| `clickLimit`          | Number   | `10`                    | Max clicks allowed within `clickInterval`.                                  |
-| `clickInterval`       | Number   | `3000`                  | Time window (ms) for counting clicks.                                       |
-| `onBlocked`           | Function | `defaultBlockedAlert`   | Callback when user is blocked due to excessive clicking.                    |
-| `selectionBackground` | String   | `null`                  | Background color for selected text.                                         |
-| `detectAdblock` | Boolean   | `false`                  | Prevent people with adblockers.                                        |
-| `selectionTextColor`  | String   | `'red'`                 | Text color for selected text.                                              |
-| `password`            | String   | `'default_password'`    | Password for accessing protected content.                                   |
+You can run multiple independent StopEdit instances on the same page, each targeting a different element with different settings.
 
-### HTML Attributes
-| Attribute            | Default | Description                                                                 |
-|----------------------|---------|-----------------------------------------------------------------------------|
-| `contenteditable`    | `true`  | Allow live editing if whitelisted. Example: `<div contenteditable="true">`   |
-| `protected`          | `false` | Protect images from downloads/right-clicks. Example: `<img protected>`       |
+```js
+// Zone A — fully locked
+new StopEdit({ selector: '#locked', noCopy: true }).init();
 
---------------------------------------------------------------------------------
+// Zone B — copyable with watermark
+new StopEdit({ selector: '#article', noCopy: false, customCopyText: '© My Site' }).init();
+```
 
-## 🔍 How It Works
+> **Note:** Use IDs for selectors when targeting specific elements. Class-based pseudo-selectors like `:first-of-type` match by tag, not class, and may silently fail to resolve.
 
-1. **Content Backup**: StopEdit saves a snapshot of your original content on initialization.
-2. **Live Monitoring**: Uses `MutationObserver` to catch DOM changes in real-time.
-3. **Heartbeat Checks**: Optional periodic scans to ensure nothing slips through.
-4. **Click Tracking**: Monitors clicks to block rapid-fire interactions.
-5. **Protection Layers**: Disables copying, printing, and right-clicks; protects images; and adds a password overlay if set.
-6. **Text Styling**: Customizes selected text appearance for a polished look.
+---
 
---------------------------------------------------------------------------------
+## Public API
 
-## 📜 Changelog
+```js
+const guard = new StopEdit({ selector: '#content' });
 
-### [Unreleased]
-- Video protection
-- Device blocking
-- Enhanced anti-copy measures
-- Suspicious user detection
-- Server-side integration (PHP, Node.js)
+guard.init();      // Start protection
+guard.disable();   // Stop all observers, intervals, and remove overlays
+```
 
-## [1.5.0] Latest
-- Adblock detection
-- Lib slightly improved
-- Documentation readme updated
-- Example html updated
+---
 
-### [1.4.0]
-- Added click monitoring to block excessive interactions.
-- Introduced password protection with a login overlay.
-- Added custom text selection styling (`selectionBackground`, `selectionTextColor`).
-- Improved copy protection with custom copyright text.
+## Browser Support
 
-### [1.3.0]
-- Added `noCopy`, `noPrint`, `noScreenshot`, and `autoBlur` features.
-- Enhanced image protection with canvas conversion.
+All modern browsers. No polyfills required. Uses `MutationObserver`, `canvas`, `navigator.clipboard`, and CSS `user-select`.
 
-### [1.2.0]
-- Added image protection for `<img protected>`.
-- Updated README with better examples.
+---
 
-### [1.1.0] - Initial Release 🎉
-- Core functionality for monitoring and resetting content.
-- Basic documentation added.
+## License
 
---------------------------------------------------------------------------------
-
-## 📝 To-Do List
-
-### Current Progress 🚀
-- [ ] Enhanced anti-theft measures for code.
-- [ ] Advanced anti-copy protections.
-
-### Future Enhancements 🔧
-- [ ] Server-side integration (PHP, Node.js) for backend validation.
-- [ ] Detailed online documentation with interactive examples.
-- [ ] Video protection for embedded media.
-
---------------------------------------------------------------------------------
-
-## 🤝 Contributing
-
-We love contributions! Got a bug fix, new feature, or docs improvement? Jump in:
-
-1. **Fork the repo**: [miragek-stop-edit-js-lib](https://github.com/miragekdev/miragek-stop-edit-js-lib).
-2. **Clone your fork**:
-   ```bash
-   git clone https://github.com/YOUR_USERNAME/miragek-stop-edit-js-lib.git
-   ```
-3. **Create a branch**:
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-4. **Commit changes**:
-   ```bash
-   git add .
-   git commit -m "Added my awesome feature"
-   ```
-5. **Push to your fork**:
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-6. **Submit a Pull Request**: Open a PR in the main repo.
-
-### Guidelines
-- Test your changes thoroughly.
-- Keep commit messages clear and descriptive.
-- Follow the repo’s coding style (no messy code, please!).
-
-Questions? Open an issue or start a discussion. Let’s build something epic! 🔥
-
---------------------------------------------------------------------------------
-
-## 📄 License
-
-StopEdit is licensed under the MIT License. See the `LICENSE` file for details.
-
---------------------------------------------------------------------------------
-
-## 👤 Author
-
-**Created by Godsent for Miragek**
-
-Built with 💀 and a sprinkle of PHP dev chaos. 😭😂
-
---------------------------------------------------------------------------------
-
-## 🚀 Final Notes
-
-StopEdit is your lightweight, no-nonsense shield against frontend tampering. It’s easy to set up, packs a punch, and keeps your site safe from those pesky dev tool abusers. Got ideas or feedback? Hit me up on GitHub. Let’s keep the web safe and the fire burning! 🔥💀
+MIT — built by Godsent for [Miragek](https://miragek.com).

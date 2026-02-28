@@ -1,219 +1,130 @@
-<?php
-// Basic PHP setup for serving the HTML page
-header('Content-Type: text/html; charset=UTF-8');
-?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>StopEdit Demo - Miragek Protection 💀🔥</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 1000px;
-            margin: 0 auto;
-            padding: 20px;
-            background: #f5f7fa;
-            color: #2c3e50;
-            line-height: 1.7;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>StopEdit Demo</title>
+  <style>
+    body { font-family: Arial, sans-serif; max-width: 860px; margin: 40px auto; padding: 0 20px; background: #f5f7fa; color: #2c3e50; }
+    h1   { text-align: center; color: #1a5276; margin-bottom: 4px; }
+    h2   { margin-top: 0; color: #1a5276; }
 
-        h1, h2 {
-            color: #1a5276;
-            text-align: center;
-        }
+    .card  { background: #fff; border-radius: 10px; padding: 24px; margin: 20px 0; box-shadow: 0 4px 12px rgba(0,0,0,.08); }
 
-        .container {
-            background: #ffffff;
-            border: 1px solid #dfe6e9;
-            border-radius: 10px;
-            padding: 25px;
-            margin: 20px 0;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-        }
+    .badge { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: .78em; font-weight: bold; margin-left: 6px; vertical-align: middle; }
+    .badge.locked  { background: #fdecea; color: #c0392b; }
+    .badge.allowed { background: #eafaf1; color: #1e8449; }
 
-        .editable {
-            background: #fff8e1;
-            padding: 15px;
-            border: 2px dashed #e67e22;
-            border-radius: 6px;
-            color: #444;
-            margin: 10px 0;
-        }
+    .zone           { padding: 14px; border-radius: 6px; margin: 10px 0; line-height: 1.6; }
+    .zone.protected { background: #fdecea; border: 1px solid #f5b7b1; }
+    .zone.copyable  { background: #eafaf1; border: 1px dashed #27ae60; }
+    .zone.editable  { background: #fff8e1; border: 2px dashed #e67e22; outline: none; }
 
-        .image-gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 15px;
-            justify-items: center;
-            margin: 20px 0;
-        }
+    .notice { background: #fef9e7; border: 1px solid #f1c40f; border-radius: 8px; padding: 12px 18px; text-align: center; font-weight: bold; color: #d35400; margin: 0 0 20px; }
 
-        .image-gallery img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #b0bec5;
-            box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+    .gallery { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 14px; }
+    .gallery figure { margin: 0; text-align: center; font-size: .8em; color: #7f8c8d; }
+    .gallery img,
+    .gallery canvas { width: 150px; height: 150px; object-fit: cover; border-radius: 8px; border: 2px solid #b0bec5; display: block; }
+    .gallery img[protected],
+    .gallery canvas[protected] { border-color: #3498db; }
 
-        .image-gallery .protected-img {
-            border: 2px solid #3498db;
-            background: #e6f3ff;
-        }
-
-        .image-gallery img:hover {
-            transform: scale(1.08);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .doc-section {
-            background: #ecf0f1;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 20px 0;
-            font-family: 'Courier New', Courier, monospace;
-            border-left: 4px solid #3498db;
-        }
-
-        .doc-title {
-            font-weight: bold;
-            color: #1a5276;
-            font-size: 1.2em;
-            margin-bottom: 10px;
-        }
-
-        .doc-content {
-            font-size: 0.95em;
-            color: #34495e;
-        }
-
-        .password-notice {
-            background: #ffeaa7;
-            padding: 15px;
-            border-radius: 8px;
-            text-align: center;
-            font-weight: bold;
-            color: #d35400;
-            margin: 20px 0;
-            border: 1px solid #f1c40f;
-        }
-
-        footer {
-            text-align: center;
-            margin-top: 30px;
-            font-size: 0.9em;
-            color: #7f8c8d;
-        }
-
-        footer a {
-            color: #3498db;
-            text-decoration: none;
-            font-weight: bold;
-        }
-
-        footer a:hover {
-            text-decoration: underline;
-        }
-    </style>
+    footer { text-align: center; margin-top: 30px; font-size: .85em; color: #999; }
+    footer a { color: #3498db; text-decoration: none; }
+  </style>
 </head>
 <body>
-    <h1>StopEdit Demo - Lock It Down! 🛡️💀</h1>
-    <div class="password-notice">
-        Demo Password: <strong>123</strong> (Enter this to unlock the page! 😎)
+
+  <h1>StopEdit Demo 🛡️</h1>
+  <div class="notice">Password: <strong>123</strong> &mdash; required to unlock the page</div>
+
+  <!-- ① noCopy + autoBlur + adblock -->
+  <div class="card" id="protected-card">
+    <h2>Protected Content <span class="badge locked">noCopy</span> <span class="badge locked">autoBlur</span> <span class="badge locked">adblock</span></h2>
+
+    <div class="zone protected">
+      Try selecting or copying this text — you can't. Ctrl+A, Ctrl+C, right-click: all blocked.
+      Move your mouse outside the browser window and the page will blur. 😶‍🌫️
     </div>
 
-    <div class="doc-section">
-        <div class="doc-title">Protected Text</div>
-        <div class="doc-content">
-            <p>This content is guarded by StopEdit. Try messing with it via Inspect Element—it’ll snap back faster than you can say "hacker"! 🔒</p>
-            <p>The editable sections below are whitelisted, so users can type there. Everything else? Locked down tight.</p>
-        </div>
+    <div class="zone protected">
+      Same protection here. Mouse drag, keyboard shortcuts, context menu: all locked.
     </div>
 
-    <div class="container">
-        <h2>Text Protection</h2>
-        <div id="editable-section" class="editable" contenteditable="true">
-            Whitelisted section! Type away, you’re allowed here. ✍️😃
-        </div>
-        <div id="protected-section" contenteditable="false">
-            This is locked! Try editing via dev tools—StopEdit will laugh at you. 😎🔴
-        </div>
+    <div id="editable-zone" class="zone editable" contenteditable="true">
+      ✍️ Whitelisted — you can type and select freely in this box.
     </div>
+  </div>
 
-    <div class="container">
-        <h2>Non-Editable Content</h2>
-        <div class="editable">
-            No `id="editable-section"` here, so it’s protected! Try adding `contenteditable` via Inspect Element—won’t work! 😭
-        </div>
-        <div contenteditable="true">
-            This has `contenteditable="true"`, but no whitelist, so it’s still locked. StopEdit rules! 💀
-        </div>
+  <!-- ② copyable with attribution -->
+  <div class="card" id="copyable-card">
+    <h2>Copyable Content <span class="badge allowed">noCopy: false</span></h2>
+    <div class="zone copyable">
+      Select and copy this text. Your clipboard gets a copyright notice appended in both
+      plain text and HTML — paste into Notepad and into a rich-text editor to see the difference.
     </div>
+    <blockquote style="border-left:3px solid #3498db;padding:8px 16px;background:#eaf4fd;border-radius:4px;margin:10px 0;">
+      "The quick brown fox jumps over the lazy dog." — Try copying this!
+    </blockquote>
+  </div>
 
-    <div class="doc-section">
-        <div class="doc-title">Protected Images</div>
-        <div class="doc-content">
-            <p>Images with the `protected` attribute are shielded from right-clicks and downloads. Normal images are fair game.</p>
-            <p>Try saving the protected image—good luck! 😜</p>
-        </div>
+  <!-- ③ image protection -->
+  <div class="card" id="image-card">
+    <h2>Image Protection <span class="badge locked">protected attr</span></h2>
+    <p style="margin:0 0 4px;color:#555;font-size:.95em;">
+      Images with the <code>protected</code> attribute are silently replaced with a canvas at load time.
+      Right-click → Save and drag-and-drop are blocked on the blue-bordered one.
+    </p>
+    <div class="gallery">
+      <figure>
+        <img src="https://picsum.photos/seed/stopedit/150" alt="Protected" protected>
+        <figcaption>Protected ✅</figcaption>
+      </figure>
+      <figure>
+        <img src="https://picsum.photos/seed/normal/150" alt="Normal">
+        <figcaption>Normal (right-click works)</figcaption>
+      </figure>
     </div>
+  </div>
 
-    <div class="container">
-        <h2>Image Protection</h2>
-        <div class="image-gallery">
-            <img src="https://via.placeholder.com/150?text=Protected" alt="Protected Image" class="protected-img" protected>
-            <img src="https://via.placeholder.com/150?text=Normal" alt="Normal Image" class="normal-img">
-        </div>
-    </div>
+  <footer>
+    Built by Godsent for <a href="https://miragek.com">Miragek</a>
+  </footer>
 
-    <div class="doc-section">
-        <div class="doc-title">Features in Action</div>
-        <div class="doc-content">
-            <p>Test these out:</p>
-            <ul>
-                <li><strong>Click Limit</strong>: Click 5 times in 2 seconds to get blocked. 🚨</li>
-                <li><strong>Text Selection</strong>: Select text to see green text on a yellow background. ✨</li>
-                <li><strong>Copying</strong>: Copy text to see the custom watermark (copying allowed).</li>
-                <li><strong>Printing</strong>: Try printing—blocked! 🖨️</li>
-                <li><strong>Blur</strong>: Move your mouse out of the page to see it blur. 😶‍🌫️</li>
-                <li><strong>Password</strong>: Enter "123" to unlock the page. 🔐</li>
-            </ul>
-            <p>Screenshot protection is disabled for this demo, so you can snap away!</p>
-        </div>
-    </div>
+  <script src="StopEdit.js"></script>
+  <script>
+    // ① Protected — noCopy, autoBlur, adblock detection, password gate
+    const protectedZone = new StopEdit({
+      selector: '#protected-card',
+      whitelist: ['#editable-zone'],
+      noCopy: true,
+      noPrint: true,
+      autoBlur: true,
+      detectAdblock: true,
+      adblockRecheckDelay: 5000,
+      debug: true,
+      password: '123',
+    });
+    protectedZone.init();
 
-    <footer>
-        Built with ❤️ by Godsent for <a href="https://miragek.dev">Miragek</a>. PHP dev power! 😂🔥
-    </footer>
+    // ② Copyable — copy allowed, watermark appended to both text/plain and text/html
+    const copyableZone = new StopEdit({
+      selector: '#copyable-card',
+      noCopy: false,
+      customCopyText: 'Copied from Miragek Demo — https://miragek.com',
+      selectionBackground: 'yellow',
+      selectionTextColor: 'green',
+      debug: true,
+    });
+    copyableZone.init();
 
-    <!-- External StopEdit library (assumed in the same directory) -->
-    <script src="miragek-StopEdit.js"></script>
-    <script>
-        const stopEdit = new StopEdit({
-            selector: 'body', // Protect the entire body
-            heartbeat: 5000, // Check every 5 seconds
-            debug: true, // Log everything
-            whitelist: ['#editable-section'], // Allow edits here
-            noCopy: false, // Allow copying with watermark
-            customCopyText: 'Copied from Miragek Demo (https://miragek.dev)', // Watermark for copied text
-            noPrint: true, // Block printing
-            noScreenshot: false, // Disabled for demo
-            autoBlur: true, // Blur on mouse leave
-            clickLimit: 5, // Block after 5 clicks
-            clickInterval: 2000, // Within 2 seconds
-            onBlocked: () => alert('🚨 Chill out, too many clicks! Take a break! 😭💀'),
-            selectionBackground: 'yellow', // Yellow selection background
-            selectionTextColor: 'green', // Green selection text
-
-            detectAdblock: true, // Enable adblock detection
-            onAdblockDetected: () => alert('🚫 Yo, disable that adblocker to support us! 😜'),
-            password: '123' // Demo password
-        });
-        stopEdit.init(); // Fire it up!
-    </script>
+    // ③ Image card — image protection only, copy unrestricted
+    const imageZone = new StopEdit({
+      selector: '#image-card',
+      noCopy: false,
+      debug: true,
+    });
+    imageZone.init();
+  </script>
 </body>
 </html>
