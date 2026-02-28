@@ -23,6 +23,7 @@ class StopEdit {
     selectionBackground: null,
     selectionTextColor: 'red',
     password: null,
+    lockDOM: false,  // When false, disables the mutation observer and heartbeat entirely
   };
 
   constructor(options = {}) {
@@ -46,6 +47,31 @@ class StopEdit {
   }
 
   // ─── Public API ────────────────────────────────────────────────────────────
+
+  /**
+   * Merge new options into this instance and re-initialise.
+   * Only the keys you pass are overridden — everything else keeps its current value.
+   *
+   * Preloader (sets defaults once):
+   *   window._stopEdit = new StopEdit({ selector: '#app', noCopy: true, autoBlur: true });
+   *   window._stopEdit.init();
+   *
+   * Per-page override (just change what differs):
+   *   window._stopEdit.configure({ lockDOM: false });
+   */
+  configure(options = {}) {
+    // Tear down any active protection first
+    this.disable();
+
+    // Deep-merge whitelist arrays, override everything else
+    if (options.whitelist && this.cfg.whitelist) {
+      options.whitelist = [...new Set([...this.cfg.whitelist, ...options.whitelist])];
+    }
+
+    this.cfg = { ...this.cfg, ...options };
+    this._log('Reconfigured with:', options);
+    this.init();
+  }
 
   init() {
     const ready = (fn) =>
@@ -82,25 +108,39 @@ class StopEdit {
     const target = document.querySelector(this.cfg.selector);
     if (!target) return console.error(`StopEdit: Selector "${this.cfg.selector}" not found.`);
 
+    // Wire up all protections immediately (key blocking, copy hooks, etc.)
     this._disableDirectEditing(target);
-    this._originalContent = this._cloneContent(target);
-    this._storeWhitelistElements(target);
-    this._startObserving(target);
-    this._initImageProtection(target);
-
-    if (this.cfg.heartbeat) this._startHeartbeat(target);
-
     this._addGlobalProtection(target);
     this._monitorClicks();
     this._applySelectionStyle();
 
-    // Only hook copy/attribution when copying is allowed
     if (!this.cfg.noCopy) this._hookCopyEvent(target);
-
     if (this.cfg.noPrint)      this._initNoPrint();
     if (this.cfg.noCopy)       this._initNoCopy(target);
     if (this.cfg.autoBlur)     this._initAutoBlur();
     if (this.cfg.noScreenshot) this._initNoScreenshot();
+
+    // DOM snapshot, mutation observer and heartbeat are only active when
+    // lockDOM: true. Disable them if your own JS modifies the DOM after init.
+    if (this.cfg.lockDOM) {
+      const takeSnapshot = () => {
+        this._originalContent = this._cloneContent(target);
+        this._storeWhitelistElements(target);
+        this._startObserving(target);
+        this._initImageProtection(target);
+        if (this.cfg.heartbeat) this._startHeartbeat(target);
+        this._log('Snapshot taken. Protecting:', this.cfg.selector);
+      };
+
+      if (document.readyState === 'complete') {
+        takeSnapshot();
+      } else {
+        window.addEventListener('load', takeSnapshot, { once: true });
+      }
+    } else {
+      this._initImageProtection(target);
+      this._log('DOM locking disabled (lockDOM: false). Protecting:', this.cfg.selector);
+    }
 
     this._log('Initialized. Protecting:', this.cfg.selector);
   }
@@ -273,9 +313,23 @@ class StopEdit {
   _startObserving(target) {
     this._observer = new MutationObserver((mutations) => {
       this._log('Mutations detected', mutations);
-      const affectsWhitelist = mutations.some((m) =>
-        this.cfg.whitelist.some((sel) => m.target.matches?.(sel) || m.target.closest?.(sel))
-      );
+
+      const affectsWhitelist = mutations.some((m) => {
+        // Check the mutation target itself
+        const targetMatch = this.cfg.whitelist.some(
+          (sel) => m.target.matches?.(sel) || m.target.closest?.(sel)
+        );
+        if (targetMatch) return true;
+
+        // Check any added or removed nodes — catches self-removal of whitelisted
+        // elements (e.g. a preloader removing itself: target is the parent, not the node)
+        const nodes = [...(m.addedNodes || []), ...(m.removedNodes || [])];
+        return nodes.some((n) =>
+          n.nodeType === 1 &&
+          this.cfg.whitelist.some((sel) => n.matches?.(sel) || n.querySelector?.(sel))
+        );
+      });
+
       if (!affectsWhitelist) {
         clearTimeout(this._mutationTimeout);
         this._mutationTimeout = setTimeout(() => this._resetIfChanged(target), 200);
@@ -412,7 +466,7 @@ class StopEdit {
     overlay.innerHTML = `
       <form style="display:flex;flex-direction:column;gap:12px;padding:32px;background:#fff;border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.15);">
         <h2 style="margin:0;font-family:sans-serif;color:#1a5276;">🔐 Enter Password</h2>
-        <input type="password" placeholder="Password (eg: 123)" style="padding:10px 14px;border:1px solid #ccc;border-radius:6px;font-size:1em;">
+        <input type="password" placeholder="Password" style="padding:10px 14px;border:1px solid #ccc;border-radius:6px;font-size:1em;">
         <button type="submit" style="padding:10px;background:#3498db;color:#fff;border:none;border-radius:6px;cursor:pointer;font-size:1em;">Unlock</button>
         <p class="err" style="color:#e74c3c;margin:0;display:none;">Incorrect password</p>
       </form>
